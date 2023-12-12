@@ -8,14 +8,19 @@ import sys
 import time
 
 
+def get_env_variable(name, optional=True):
+    variable = os.environ.get(name, None)
+    if not variable and not optional:
+        print(f'Environmental variable {name} not set')
+        exit(-1)
+    return variable
+
+
 device=0
 FRAME_WIDTH = 1280
 FRAME_HEIGHT = 720
 FPS=30
-url = os.environ.get("IMG_HOST", None)
-if not url:
-    print('Environmental variable "IMG_HOST" not set')
-    exit(-1)
+url = get_env_variable("IMG_HOST", False)
 
 cap = cv2.VideoCapture(device)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH,FRAME_WIDTH)
