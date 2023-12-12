@@ -2,6 +2,7 @@ import numpy as np
 
 import cv2
 import imutils
+import os
 import requests
 import sys
 import time
@@ -11,7 +12,10 @@ device=0
 FRAME_WIDTH = 1280
 FRAME_HEIGHT = 720
 FPS=30
-url = "http://192.168.43.172:8080/shot.jpg"
+url = os.environ.get("IMG_HOST", None)
+if not url:
+    print('Environmental variable "IMG_HOST" not set')
+    exit(-1)
 
 cap = cv2.VideoCapture(device)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH,FRAME_WIDTH)
