@@ -1,9 +1,10 @@
+import numpy as np
+
+import cv2
+import imutils
+import requests
 import sys
 import time
-import requests
-import cv2
-import numpy as np
-import imutils
 
 
 device=0
