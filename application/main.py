@@ -16,11 +16,19 @@ def get_env_variable(name, optional=True):
     return variable
 
 
+def request_image(url, login=None, password=None):
+    if not login:
+        return requests.get(url)
+    return requests.get(url, auth=(login, password))
+
+
 device=0
 FRAME_WIDTH = 1280
 FRAME_HEIGHT = 720
 FPS=30
 url = get_env_variable("IMG_HOST", False)
+login = get_env_variable("IMG_LOGIN")
+password = get_env_variable("IMG_PASSWORD")
 
 cap = cv2.VideoCapture(device)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH,FRAME_WIDTH)
@@ -36,7 +44,7 @@ run = True
 while run:
     t = time.time()
     for i in range(0, 30):
-        img_resp = requests.get(url)
+        img_resp = request_image(url, login, password)
         img_arr = np.array(bytearray(img_resp.content), dtype=np.uint8)
         img = cv2.imdecode(img_arr, -1)
         #img = imutils.resize(img, width=1000, height=1000)
