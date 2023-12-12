@@ -26,8 +26,9 @@ print(cap.isOpened())
 
 pos=0
 first=True
+run = True
 
-while True:
+while run:
     t = time.time()
     for i in range(0, 30):
         img_resp = requests.get(url)
@@ -38,7 +39,7 @@ while True:
 
         # Press Esc key to exit
         if cv2.waitKey(1) == 27:
-            break
+            run = False
     t = time.time() - t
     print("FPS", 30 / t)
 cv2.destroyAllWindows()
