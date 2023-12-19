@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <vector>
 
+#define CLOSE_MESSAGE_SIZE 7312
+
 
 class SocketServer{
     private:
@@ -18,7 +20,7 @@ class SocketServer{
     ~SocketServer();
     void WaitForClientToConnect();
     void SendData(std::vector<uint8_t>& dataVector);
-    void ReciveData(std::vector<uint8_t>& dataVector);
+    int ReciveData(std::vector<uint8_t>& dataVector);
 
 
 };

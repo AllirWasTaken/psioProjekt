@@ -1,8 +1,9 @@
 #Config
-COMPILE_FLAGS = -g
+#COMPILE_FLAGS = -g #DEBUG
+COMPILE_FLAGS = -O3 #RELEASE
 LINK_FLAGS = -lwsock32
 TARGET_NAME=FruitDetectionService.exe
-HIDE_CONSOLE= #-mwindows #uncomment command to hide console 
+HIDE_CONSOLE= -mwindows #uncomment command to hide console 
 LANG_VERSION= -std=c++23
 CC=g++ -m64
 

@@ -1,40 +1,63 @@
-import sys
+import os
 import time
 import requests
 import cv2
 import numpy as np
 import socket
-import subprocess  
 
-subprocess.run(["target\FruitDetectionService.exe"]) #starting backend Service
 
 HOST = "127.0.0.1"  # The server's hostname or IP address
-PORT = 65432  # The port used by the server
+PORT = 12345  # The port used by the server
+url = "http://192.168.1.100:8080/shot.jpg" #URL used by phone camera
+CLOSE_MESSAGE_SIZE=7312
+VIDEO_X=720
+VIDEO_Y=720
+os.system("start target\FruitDetectionService.exe") #starting backend Service
+time.sleep(1) #wait for backend service to propely start
 
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.connect((HOST, PORT))
-    s.sendall(b"Hello, world")
-    data = s.recv(1024)
+#connect to backend
+s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect((HOST, PORT))
 
-print(f"Received {data!r}")
 
-FPS=30
-url = "http://192.168.43.122:8080/shot.jpg"
+def SendImageToProcess(imageToSend: np.ndarray):
+    size=imageToSend.size
+    raw=int.to_bytes(size,byteorder='little',length=4)
+    s.send(raw)
+    raw=imageToSend
+    s.send(raw)
 
-pos=0
-first=True
+
+def GetProcessedImage():
+    raw=s.recv(4)
+    size=int.from_bytes(raw,byteorder='little')
+    raw=s.recv(size)
+    data=raw
+    imageData=np.array(bytearray(data), dtype=np.uint8)
+    return imageData
+
+def CloseServer():
+    size=CLOSE_MESSAGE_SIZE
+    raw=int.to_bytes(size,byteorder='little',length=4)
+    s.send(raw)
+
+
+
 
 while True:
-    t = time.time()
-    for i in range(0, 30):
-        img_resp = requests.get(url)
-        img_arr = np.array(bytearray(img_resp.content), dtype=np.uint8)
-        img = cv2.imdecode(img_arr, -1)
-        cv2.imshow("Android_cam", img)
+    img_resp = requests.get(url)
+    img_arr = np.array(bytearray(img_resp.content), dtype=np.uint8)
+    img = cv2.imdecode(img_arr, -1)
+    SendImageToProcess(img)
+    processed_img=GetProcessedImage()
+    display_img=processed_img.reshape(VIDEO_Y,VIDEO_X,3)
+    cv2.imshow("Fruit Detection", display_img)
 
-        # Press Esc key to exit
-        if cv2.waitKey(1) == 27:
-            exit(0)
-    t = time.time() - t
-    print("FPS", 30 / t)
-cv2.destroyAllWindows()
+    # Press Esc key to exit
+    if cv2.waitKey(1) == 27:
+        cv2.destroyAllWindows()
+        CloseServer()
+        time.sleep(1)
+        s.close()
+        exit(0)
+

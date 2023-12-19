@@ -1,6 +1,8 @@
 #include "Sockets.h"
 #include <stdexcept>
 
+
+
 SocketServer::SocketServer(int port){
 
    
@@ -15,7 +17,6 @@ SocketServer::SocketServer(int port){
 	{
         throw std::runtime_error("Failed to create a socket");
 	}
-
 
     //Prerequesties to bind
     memset( & service, 0, sizeof( service ) );
@@ -49,9 +50,17 @@ void SocketServer::WaitForClientToConnect(){
     client = accept(s, NULL, NULL);
 }
 
-void SocketServer::ReciveData(std::vector<uint8_t>& dataVector){
+int  SocketServer::ReciveData(std::vector<uint8_t>& dataVector){
     int messageSize;
-    recv(s,(char*)&messageSize,4,0);
+    recv(client,(char*)&messageSize,4,0);
+    if(messageSize==CLOSE_MESSAGE_SIZE)return 1;
     dataVector.resize(messageSize);
-    recv(s,(char*)dataVector.data(),messageSize,0);
+    recv(client,(char*)dataVector.data(),messageSize,0);
+    return 0;
+}
+
+void SocketServer::SendData(std::vector<uint8_t>& dataVector){
+    int messageSize=dataVector.size();
+    send(client,(char*)&messageSize,4,0);
+    send(client,(char*)dataVector.data(),messageSize,0);
 }
