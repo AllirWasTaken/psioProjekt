@@ -8,11 +8,11 @@ import socket
 
 HOST = "127.0.0.1"  # The server's hostname or IP address
 PORT = 12345  # The port used by the server
-url = "http://192.168.1.100:8080/shot.jpg" #URL used by phone camera
+url = "http://192.168.43.245:8080/shot.jpg" #URL used by phone camera
 CLOSE_MESSAGE_SIZE=7312
 VIDEO_X=720
 VIDEO_Y=720
-os.system("start target\FruitDetectionService.exe") #starting backend Service
+os.system("start target/FruitDetectionService.exe") #starting backend Service
 time.sleep(1) #wait for backend service to propely start
 
 #connect to backend
@@ -31,10 +31,15 @@ def SendImageToProcess(imageToSend: np.ndarray):
 def GetProcessedImage():
     raw=s.recv(4)
     size=int.from_bytes(raw,byteorder='little')
-    raw=s.recv(size)
-    data=raw
-    imageData=np.array(bytearray(data), dtype=np.uint8)
-    return imageData
+    currentData=np.array(bytearray(), dtype=np.uint8)
+    while True:
+        raw=s.recv(size)
+        data=raw
+        sampleData=np.array(bytearray(data), dtype=np.uint8)
+        currentData=np.concatenate((currentData,sampleData))
+        if(currentData.size>=VIDEO_X*VIDEO_Y*3):
+            break
+    return currentData
 
 def CloseServer():
     size=CLOSE_MESSAGE_SIZE

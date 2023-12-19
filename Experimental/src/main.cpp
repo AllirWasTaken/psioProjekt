@@ -39,8 +39,8 @@ int main(void){
         }
         else{
             //Main loop for program
-            workImage.EdgeDetection(25);
-            workImage.BlobEdges(2);
+            workImage.EdgeDetection(13);
+            workImage.BlobEdges(4);
             workImage.FillObjectsWithBackgroundFilling();
         }
         
@@ -55,6 +55,7 @@ int main(void){
         server.SendData(buffer);
     }
 
+    Sleep(10);
 
 
     return 0;

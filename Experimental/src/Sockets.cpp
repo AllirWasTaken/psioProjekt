@@ -1,6 +1,6 @@
 #include "Sockets.h"
 #include <stdexcept>
-
+#include <iostream>
 
 
 SocketServer::SocketServer(int port){
@@ -62,5 +62,9 @@ int  SocketServer::ReciveData(std::vector<uint8_t>& dataVector){
 void SocketServer::SendData(std::vector<uint8_t>& dataVector){
     int messageSize=dataVector.size();
     send(client,(char*)&messageSize,4,0);
-    send(client,(char*)dataVector.data(),messageSize,0);
+    int test=send(client,(char*)dataVector.data(),messageSize,0);
+    if(test==INVALID_SOCKET){
+        throw std::runtime_error("Client unsafely dissconected");
+    }
+
 }
