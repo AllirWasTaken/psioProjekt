@@ -1,12 +1,25 @@
 #include "TaskStack.h"
+#include <memory.h>
 
 
 
 TaskStack::TaskStack(){
-    data.resize(100);
+    data=new Point2[100];
     top=0;
+    size=100;
 }
 
+TaskStack::~TaskStack(){
+    delete[] data;
+}
+
+void TaskStack::IncreaseSize(){
+    Point2 *temp=new Point2[size*2];
+    memcpy(temp,data,sizeof(Point2)*size);
+    size*=2;
+    delete[] data;
+    data=temp;
+}
 
 
 void TaskStack::Pop(Point2& a){
@@ -15,8 +28,8 @@ void TaskStack::Pop(Point2& a){
 }
 
 void TaskStack::Push(Point2& a){
-    if(top==data.size()){
-        data.resize(data.size()*2);
+    if(top==size){
+        IncreaseSize();
     }
     data[top]=a;
     top++;

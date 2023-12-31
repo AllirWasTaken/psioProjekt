@@ -124,7 +124,7 @@ void Image::EdgeDetection(int tolerance){
         }
     }
 
-    if(tolerance!=-1){
+    if(tolerance){
         for(int y=0;y<imageY;y++){
             for(int x=0;x<imageX;x++){
                 if(tempImageData[y][x].r>tolerance)tempImageData[y][x]=EDGE_COLOR;
@@ -158,6 +158,7 @@ if(tempImageData[y+1][x].r>currentVal)return currentVal;
 }
 
 void Image::BlobEdges(int blobing){
+    if(!blobing)return;
     for(int y=0;y<imageY;y++){
         for(int x=0;x<imageX;x++){
             if(imageData[y][x].r==EDGE_COLOR)tempImageData[y][x].r=blobing;
@@ -220,6 +221,7 @@ void Image::AddBorderingToStack(Point2& pix,TaskStack& stack){
 }
 
 void Image::FilterOutNoise(int minimumPixelThreshold){
+    if(!minimumPixelThreshold)return;
     tempImageData=imageData;
     Point2 tempPoint;
 
@@ -244,6 +246,80 @@ void Image::FilterOutNoise(int minimumPixelThreshold){
                         objectStack.Pop(currentPoint);
                         imageData[currentPoint.y][currentPoint.x]=0;
                     }
+                }
+            }
+        }
+    }
+
+}
+
+int Image::GetWhitePixelsAround(int x,int y){
+    int result=0;
+    Point2 temp;
+    //up
+    if(y>0){
+        if(imageData[y-1][x].r==EDGE_COLOR){
+            result++;
+        }
+    }
+    //up left
+    if(y>0&&x>0){
+        if(imageData[y-1][x-1].r==EDGE_COLOR){
+            result++;
+        }
+    }
+    //up right
+    if(x<imageX-1&&y>0){
+        if(imageData[y-1][x+1].r==EDGE_COLOR){
+            result++;
+        }
+    }
+    //down left
+    if(y<imageY-1&&x>0){
+        if(imageData[y+1][x-1].r==EDGE_COLOR){
+            result++;
+        }
+    }
+    //down right
+    if(y<imageY-1&&x<imageX-1){
+        if(imageData[y+1][x+1].r==EDGE_COLOR){
+            result++;
+        }
+    }
+    //down
+    if(y<imageY-1){
+        if(imageData[y+1][x].r==EDGE_COLOR){
+            result++;
+        }
+    }
+    //right
+    if(x<imageX-1){
+       if(imageData[y][x+1].r==EDGE_COLOR){
+            result++;
+        }
+    }
+    //left
+    if(x>0){
+      if(imageData[y][x-1].r==EDGE_COLOR){
+            result++;
+        }
+    }
+    return result;
+}
+
+void Image::Antialiasing(int iterations){
+
+    for(int i=0;i<iterations;i++){
+         for(int y=0;y<imageY;y++){
+            for(int x=0;x<imageX;x++){
+                tempImageData[y][x].r=GetWhitePixelsAround(x,y);
+            }
+        }
+
+        for(int y=0;y<imageY;y++){
+            for(int x=0;x<imageX;x++){
+                if(tempImageData[y][x].r<5){
+                    imageData[y][x]=0;
                 }
             }
         }

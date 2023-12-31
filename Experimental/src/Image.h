@@ -25,6 +25,7 @@ class Image{
     int MaxMeanValueDiffAroundPixel(int y,int x);
     int BlobingMaxValueAround(int x,int y, int currentVal);
     void AddBorderingToStack(Point2& pix,TaskStack& stack);
+    int GetWhitePixelsAround(int x, int y);
 
     public:
     Image(int x,int y);
@@ -35,6 +36,7 @@ class Image{
     void EdgeDetection(int tolerance=0);
     void BlobEdges(int blobing=2);
     void FilterOutNoise(int minimumPixelThreshold=0); 
+    void Antialiasing(int iterations);
     std::vector<Pixel>& operator[](int index);
 
 };

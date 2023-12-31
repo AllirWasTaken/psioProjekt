@@ -1,5 +1,5 @@
 #pragma once
-#include<vector>
+
 
 
 
@@ -11,12 +11,14 @@ class Point2{
 
 class TaskStack{
     private:
-    std::vector<Point2> data;
-    int top;
+    Point2 *data;
+    int top,size;
+    void IncreaseSize();
     
 
     public:
     TaskStack();
+    ~TaskStack();
     void Pop(Point2& a);
     void Push(Point2& a);
     void EmptyTheStack();
