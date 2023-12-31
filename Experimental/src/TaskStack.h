@@ -19,7 +19,10 @@ class TaskStack{
     TaskStack();
     void Pop(Point2& a);
     void Push(Point2& a);
+    void EmptyTheStack();
+    Point2& operator[](int index);
     bool isEmpty();
+    int GetSize();
 
 
 };

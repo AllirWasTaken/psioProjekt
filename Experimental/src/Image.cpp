@@ -82,48 +82,30 @@ void Image::FitIntoImage(Image& src){
 }
 
 int Image::MaxMeanValueDiffAroundPixel(int x, int y){
-    int temp;
-    int max;
     int result=0;
     //up
     if(y>0){
-        temp=abs(imageData[y-1][x].r-imageData[y][x].r);
-        max=temp;
-        temp=abs(imageData[y-1][x].g-imageData[y][x].g);
-        if(temp>max)max=temp;
-        temp=abs(imageData[y-1][x].b-imageData[y][x].b);
-        if(temp>max)max=temp;
-        result+=temp;
+        result+=abs(imageData[y-1][x].r-imageData[y][x].r);
+        result+=abs(imageData[y-1][x].g-imageData[y][x].g);
+        result+=abs(imageData[y-1][x].b-imageData[y][x].b);
     }
     //down
     if(y<imageY-1){
-        temp=abs(imageData[y+1][x].r-imageData[y][x].r);
-        max=temp;
-        temp=abs(imageData[y+1][x].g-imageData[y][x].g);
-        if(temp>max)max=temp;
-        temp=abs(imageData[y+1][x].b-imageData[y][x].b);
-        if(temp>max)max=temp;
-        result+=temp;
+        result+=abs(imageData[y+1][x].r-imageData[y][x].r);
+        result+=abs(imageData[y+1][x].g-imageData[y][x].g);
+        result+=abs(imageData[y+1][x].b-imageData[y][x].b);
     }
     //right
     if(x<imageX-1){
-        temp=abs(imageData[y][x+1].r-imageData[y][x].r);
-        max=temp;
-        temp=abs(imageData[y][x+1].g-imageData[y][x].g);
-        if(temp>max)max=temp;
-        temp=abs(imageData[y][x+1].b-imageData[y][x].b);
-        if(temp>max)max=temp;
-        result+=temp;
+        result+=abs(imageData[y][x+1].r-imageData[y][x].r);
+        result+=abs(imageData[y][x+1].g-imageData[y][x].g);
+        result+=abs(imageData[y][x+1].b-imageData[y][x].b);
     }
     //left
     if(x>0){
-        temp=abs(imageData[y][x-1].r-imageData[y][x].r);
-        max=temp;
-        temp=abs(imageData[y][x-1].g-imageData[y][x].g);
-        if(temp>max)max=temp;
-        temp=abs(imageData[y][x-1].b-imageData[y][x].b);
-        if(temp>max)max=temp;
-        result+=temp;
+        result+=abs(imageData[y][x-1].r-imageData[y][x].r);
+        result+=abs(imageData[y][x-1].g-imageData[y][x].g);
+        result+=abs(imageData[y][x-1].b-imageData[y][x].b);
     }
     if(result>255)result=255;
     return result;
@@ -196,11 +178,16 @@ void Image::BlobEdges(int blobing){
     imageData=tempImageData;
 }
 
-void Image::AddBorderingToStack(int x,int y,TaskStack& stack){
+void Image::AddBorderingToStack(Point2& pix,TaskStack& stack){
+
+    int x,y;
+    y=pix.y;
+    x=pix.x;
+
     Point2 temp;
     //up
     if(y>0){
-        if(tempImageData[y-1][x].r==0){
+        if(tempImageData[y-1][x].r==EDGE_COLOR){
             temp.x=x;
             temp.y=y-1;
             stack.Push(temp);
@@ -208,7 +195,7 @@ void Image::AddBorderingToStack(int x,int y,TaskStack& stack){
     }
     //down
     if(y<imageY-1){
-        if(tempImageData[y+1][x].r==0){
+        if(tempImageData[y+1][x].r==EDGE_COLOR){
             temp.x=x;
             temp.y=y+1;
             stack.Push(temp);
@@ -216,7 +203,7 @@ void Image::AddBorderingToStack(int x,int y,TaskStack& stack){
     }
     //right
     if(x<imageX-1){
-       if(tempImageData[y][x+1].r==0){
+       if(tempImageData[y][x+1].r==EDGE_COLOR){
             temp.x=x+1;
             temp.y=y;
             stack.Push(temp);
@@ -224,7 +211,7 @@ void Image::AddBorderingToStack(int x,int y,TaskStack& stack){
     }
     //left
     if(x>0){
-      if(tempImageData[y][x-1].r==0){
+      if(tempImageData[y][x-1].r==EDGE_COLOR){
             temp.x=x-1;
             temp.y=y;
             stack.Push(temp);
@@ -232,34 +219,33 @@ void Image::AddBorderingToStack(int x,int y,TaskStack& stack){
     }
 }
 
-void Image::FillObjectsWithBackgroundFilling(){
+void Image::FilterOutNoise(int minimumPixelThreshold){
     tempImageData=imageData;
+    Point2 tempPoint;
+
+
+
     for(int y=0;y<imageY;y++){
         for(int x=0;x<imageX;x++){
-            if(y==0||y==imageY-1||x==0||x==imageX-1){
-                tempImageData[y][x]=0;
+            if(tempImageData[y][x].r==EDGE_COLOR){
+                TaskStack objectStack;
+                tempPoint.y=y;
+                tempPoint.x=x;
+                taskStack.Push(tempPoint);
+                Point2 currentPoint;
+                while(!taskStack.isEmpty()){
+                    taskStack.Pop(currentPoint);
+                    objectStack.Push(currentPoint);
+                    tempImageData[currentPoint.y][currentPoint.x].r=0;
+                    AddBorderingToStack(currentPoint,taskStack);
+                }
+                if(objectStack.GetSize()<minimumPixelThreshold){
+                    while(!objectStack.isEmpty()){
+                        objectStack.Pop(currentPoint);
+                        imageData[currentPoint.y][currentPoint.x]=0;
+                    }
+                }
             }
-        }
-    }
-
-    Point2 currentPoint;
-    currentPoint.x=0;
-    currentPoint.y=0;
-    taskStack.Push(currentPoint);
-
-    while(!taskStack.isEmpty()){
-        taskStack.Pop(currentPoint);
-        if(tempImageData[currentPoint.y][currentPoint.x].r!=BACKGROUND_FILL){
-            tempImageData[currentPoint.y][currentPoint.x].r=BACKGROUND_FILL;
-            AddBorderingToStack(currentPoint.x,currentPoint.y,taskStack);
-        }
-
-    }
-
-    for(int y=0;y<imageY;y++){
-        for(int x=0;x<imageX;x++){
-            if(tempImageData[y][x].r==BACKGROUND_FILL)imageData[y][x]=0;
-            else imageData[y][x]=EDGE_COLOR;
         }
     }
 

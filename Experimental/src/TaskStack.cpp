@@ -26,3 +26,15 @@ bool TaskStack::isEmpty(){
     if(!top)return true;
     return false;
 }
+
+void TaskStack::EmptyTheStack(){
+    top=0;
+}
+
+Point2& TaskStack::operator[](int index){
+    return data[index];
+}
+
+int TaskStack::GetSize(){
+    return top;
+}

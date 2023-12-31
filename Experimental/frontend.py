@@ -8,7 +8,7 @@ import socket
 
 HOST = "127.0.0.1"  # The server's hostname or IP address
 PORT = 12345  # The port used by the server
-url = "http://192.168.43.245:8080/shot.jpg" #URL used by phone camera
+url = "http://192.168.1.100:8080/shot.jpg" #URL used by phone camera
 CLOSE_MESSAGE_SIZE=7312
 VIDEO_X=720
 VIDEO_Y=720

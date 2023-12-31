@@ -6,7 +6,7 @@
 
 #define VIDEO_X 720
 #define VIDEO_Y 720
-#define VIDEO_WORK_X 720
+#define VIDEO_WORK_X 710
 #define VIDEO_WORK_Y 560
 #define CALIBTATION_FRAMES 25
 
@@ -39,9 +39,9 @@ int main(void){
         }
         else{
             //Main loop for program
-            workImage.EdgeDetection(13);
-            workImage.BlobEdges(4);
-            workImage.FillObjectsWithBackgroundFilling();
+            workImage.EdgeDetection(100);
+            workImage.BlobEdges(2);
+            workImage.FilterOutNoise(500);
         }
         
 
@@ -55,7 +55,6 @@ int main(void){
         server.SendData(buffer);
     }
 
-    Sleep(10);
 
 
     return 0;
