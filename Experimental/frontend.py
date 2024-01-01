@@ -6,9 +6,25 @@ import numpy as np
 import socket
 
 
+def get_env_variable(name, optional=True):
+    variable = os.environ.get(name, None)
+    if not variable and not optional:
+        print(f'Environmental variable {name} not set')
+        exit(-1)
+    return variable
+
+
+def request_image(url, login=None, password=None):
+    if not login:
+        return requests.get(url)
+    return requests.get(url, auth=(login, password))
+
+
 HOST = "127.0.0.1"  # The server's hostname or IP address
 PORT = 12345  # The port used by the server
-url = "http://192.168.1.100:8080/shot.jpg" #URL used by phone camera
+url = get_env_variable("IMG_HOST", False) # URL used by phone camera
+login = get_env_variable("IMG_LOGIN") # login passed to phone camera url
+password = get_env_variable("IMG_PASSWORD") # password passed to phone camera url
 CLOSE_MESSAGE_SIZE=7312
 VIDEO_X=720
 VIDEO_Y=720
@@ -50,7 +66,7 @@ def CloseServer():
 
 
 while True:
-    img_resp = requests.get(url)
+    img_resp = request_image(url, login, password)
     img_arr = np.array(bytearray(img_resp.content), dtype=np.uint8)
     img = cv2.imdecode(img_arr, -1)
     SendImageToProcess(img)
