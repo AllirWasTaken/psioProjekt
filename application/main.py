@@ -47,8 +47,10 @@ while run:
         img_resp = request_image(url, login, password)
         img_arr = np.array(bytearray(img_resp.content), dtype=np.uint8)
         img = cv2.imdecode(img_arr, -1)
+        edges = cv2.Canny(img, 100, 200)
         #img = imutils.resize(img, width=1000, height=1000)
-        cv2.imshow("Android_cam", img)
+        #cv2.imshow("Android_cam", img)
+        cv2.imshow("Edges", edges)
 
         # Press Esc key to exit
         if cv2.waitKey(1) == 27:
