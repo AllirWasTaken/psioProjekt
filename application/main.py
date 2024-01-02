@@ -22,7 +22,6 @@ def request_image(url, login=None, password=None):
     return requests.get(url, auth=(login, password))
 
 
-device=0
 FRAME_WIDTH = 1280
 FRAME_HEIGHT = 720
 FPS=30
@@ -30,15 +29,6 @@ url = get_env_variable("IMG_HOST", False)
 login = get_env_variable("IMG_LOGIN")
 password = get_env_variable("IMG_PASSWORD")
 
-cap = cv2.VideoCapture(device)
-cap.set(cv2.CAP_PROP_FRAME_WIDTH,FRAME_WIDTH)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT,FRAME_HEIGHT)
-cap.set(cv2.CAP_PROP_FPS,FPS)
-
-print(cap.isOpened())
-
-pos=0
-first=True
 run = True
 
 while run:
