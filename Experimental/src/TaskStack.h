@@ -25,6 +25,7 @@ class TaskStack{
     Point2& operator[](int index);
     bool isEmpty();
     int GetSize();
+    Point2* Data();
 
 
 };

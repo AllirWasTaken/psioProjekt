@@ -326,3 +326,23 @@ void Image::Antialiasing(int iterations){
     }
 
 }
+
+int Image::Height(){
+    return imageY;
+}
+
+int Image::Width(){
+    return imageX;
+}
+
+
+void Image::DrawSquare(int x,int y,int size){
+    x-=size/2;
+    y-=size/2;
+    for(int j=0;j<size;j++){
+        for(int i=0;i<size;i++){
+            imageData[y+j][x+i]=0;
+            imageData[y+j][x+i].g=255;
+        }
+    }
+}

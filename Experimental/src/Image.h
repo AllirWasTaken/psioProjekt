@@ -37,6 +37,9 @@ class Image{
     void BlobEdges(int blobing=2);
     void FilterOutNoise(int minimumPixelThreshold=0); 
     void Antialiasing(int iterations);
+    int Height();
+    int Width();
+    void DrawSquare(int x,int y,int size);
     std::vector<Pixel>& operator[](int index);
 
 };

@@ -4,6 +4,7 @@
 #include <windows.h>
 #include "Image.h"
 #include "Config.h"
+#include "ObjectDetection.h"
 
 Config config;
 
@@ -15,12 +16,13 @@ void *ImageProcessingService(void* arg){
     std::vector<uint8_t> buffer;
     Image image(configPtr->videoX,configPtr->videoY);
     Image workImage(configPtr->videoWorkX,configPtr->videoWorkY);
+    ObjectDetection detector;
 
 
     while(configPtr->work){
-        configPtr->MeasureFps();
         //Recive frame from frontEnd
         if(server.ReciveData(buffer))break;
+        configPtr->MeasureFps();
         image.ConvertStreamToImage(buffer);
         //Cut originalImage to smaller size to limit detection area
         image.CutImage(workImage);
@@ -35,7 +37,6 @@ void *ImageProcessingService(void* arg){
         }
         else{
             //Main loop for program
-
             //Image processing for detection
             workImage.EdgeDetection(configPtr->edgeDetectionThreshold);
             workImage.BlobEdges(configPtr->blobEdgesAmount);
@@ -43,9 +44,14 @@ void *ImageProcessingService(void* arg){
             workImage.Antialiasing(configPtr->antialiasingIterations);
 
             //Detecting objects in image
+            if(configPtr->detectObjects){
+                detector.DetectObjects(workImage,configPtr->ObjectNoiseThreshold);
+            }
 
-
-
+            if(configPtr->debugMode&&configPtr->detectObjects){
+                detector.DrawObjects(workImage);
+            }
+            detector.CalculateObjectsVariables();
 
         }
         
@@ -55,9 +61,16 @@ void *ImageProcessingService(void* arg){
             //Fit for debuging
             image.FitIntoImage(workImage);
         }
+        else{
+            detector.OffestObjects((configPtr->videoX-configPtr->videoWorkX)/2, (configPtr->videoY-configPtr->videoWorkY)/2);
+            for(int i=0;i<detector.GetObjects().size();i++){
+                image.DrawSquare(detector.GetObjects()[i].pos.x,detector.GetObjects()[i].pos.y,10);
+            }
+        }
 
         //Send frame to frontEnd
         image.ConvertImageToStream(buffer);
+        configPtr->MeasureTime();
         server.SendData(buffer);
     }
 
@@ -74,6 +87,8 @@ void Settings(){
     std::cout<<"blob|blobEdgesAmount|"<<config.blobEdgesAmount<<"\n";
     std::cout<<"filter|filterNoiseThreshold|"<<config.filterNoiseThreshold<<"\n";
     std::cout<<"anti|antialiasingIterations|"<<config.antialiasingIterations<<"\n";
+    std::cout<<"objfilter|ObjectNoiseThreshold|"<<config.ObjectNoiseThreshold<<"\n";
+    std::cout<<"detect|detectObjects|"<<config.detectObjects<<"\n";
     std::cout<<">>";
 
     char commandbuffer[101];
@@ -90,6 +105,12 @@ void Settings(){
     }
     else if(command=="filter"){
         commandSelected=3;
+    }
+    else if(command=="objfilter"){
+        commandSelected=5;
+    }
+    else if(command=="detect"){
+        commandSelected=6;
     }
     else if(command=="anti"){
         commandSelected=4;
@@ -117,6 +138,12 @@ void Settings(){
     else if(commandSelected==4){
         config.antialiasingIterations=newValue;
     }
+    else if(commandSelected==5){
+        config.ObjectNoiseThreshold=newValue;
+    }
+    else if(commandSelected==6){
+        config.detectObjects=newValue;
+    }
 
 
 
@@ -131,7 +158,11 @@ void* FpsDisplayFunc(void* args){
 
     while(*work){
         SetConsoleCursorPosition(hConsole, pos);
-        std::cout<<"fps: "<<config.fps<<"\n";
+        float delivery=1000/config.fps;
+        delivery=delivery-config.time;
+        std::cout<<"fps: "<<config.fps<<"   \n";
+        std::cout<<"processing time ms: "<<config.time<<"   \n";
+        std::cout<<"data delivery time ms:"<<delivery<<"    \n";
         std::cout<<"Press Enter to leave fps view\n";
         Sleep(50);
     }

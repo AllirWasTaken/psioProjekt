@@ -7,8 +7,10 @@ public:
 bool work;
 //Fps measurement
 float fps;
+float time;
 std::chrono::high_resolution_clock::time_point start,end;
 void MeasureFps();
+void MeasureTime();
 //Settings
 void SetDefault();
 int videoY;
@@ -23,6 +25,9 @@ int edgeDetectionThreshold;
 int blobEdgesAmount;
 int filterNoiseThreshold;
 int antialiasingIterations;
+
+int ObjectNoiseThreshold;
+int detectObjects;
 
 
 

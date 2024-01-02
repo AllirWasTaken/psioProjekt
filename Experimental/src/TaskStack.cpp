@@ -51,3 +51,7 @@ Point2& TaskStack::operator[](int index){
 int TaskStack::GetSize(){
     return top;
 }
+
+Point2* TaskStack::Data(){
+    return data;
+}
