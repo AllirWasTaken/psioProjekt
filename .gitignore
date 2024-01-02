@@ -1,2 +1,5 @@
 
 Experimental/target
+ImageRecognition/cmake-build-debug
+ImageRecognition/cmake-build-release
+ImageRecognition/.idea
