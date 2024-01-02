@@ -81,8 +81,10 @@ void Image::FitIntoImage(Image& src){
     }
 }
 
-int Image::MaxMeanValueDiffAroundPixel(int x, int y){
+int Image::MaxMeanValueDiffAroundPixel(int x, int y, int range){
     int result=0;
+    int safetyCheck=1;
+    
     //up
     if(y>0){
         result+=abs(imageData[y-1][x].r-imageData[y][x].r);
@@ -107,11 +109,36 @@ int Image::MaxMeanValueDiffAroundPixel(int x, int y){
         result+=abs(imageData[y][x-1].g-imageData[y][x].g);
         result+=abs(imageData[y][x-1].b-imageData[y][x].b);
     }
+    //up left
+    if(y>0&&x>0){
+        result+=abs(imageData[y-1][x-1].r-imageData[y][x].r);
+        result+=abs(imageData[y-1][x-1].g-imageData[y][x].g);
+        result+=abs(imageData[y-1][x-1].b-imageData[y][x].b);
+    }
+    //up right
+    if(x<imageX-1&&y>0){
+        result+=abs(imageData[y-1][x+1].r-imageData[y][x].r);
+        result+=abs(imageData[y-1][x+1].g-imageData[y][x].g);
+        result+=abs(imageData[y-1][x+1].b-imageData[y][x].b);
+    }
+    //down left
+    if(y<imageY-1&&x>0){
+        result+=abs(imageData[y+1][x-1].r-imageData[y][x].r);
+        result+=abs(imageData[y+1][x-1].g-imageData[y][x].g);
+        result+=abs(imageData[y+1][x-1].b-imageData[y][x].b);
+    }
+    //down right
+    if(y<imageY-1&&x<imageX-1){
+        result+=abs(imageData[y+1][x+1].r-imageData[y][x].r);
+        result+=abs(imageData[y+1][x+1].g-imageData[y][x].g);
+        result+=abs(imageData[y+1][x+1].b-imageData[y][x].b);
+    }
+    result/=2;
     if(result>255)result=255;
     return result;
 }
 
-void Image::EdgeDetection(int tolerance){
+void Image::EdgeDetection(int tolerance, int range){
     for(int y=0;y<imageY;y++){
         for(int x=0;x<imageX;x++){
             tempImageData[y][x]=0;
@@ -120,7 +147,7 @@ void Image::EdgeDetection(int tolerance){
 
     for(int y=0;y<imageY;y++){
         for(int x=0;x<imageX;x++){
-            tempImageData[y][x]=MaxMeanValueDiffAroundPixel(x,y);
+            tempImageData[y][x]=MaxMeanValueDiffAroundPixel(x,y,range);
         }
     }
 

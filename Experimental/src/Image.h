@@ -22,7 +22,7 @@ class Image{
     std::vector<std::vector<Pixel>> tempImageData;
     TaskStack taskStack;
 
-    int MaxMeanValueDiffAroundPixel(int y,int x);
+    int MaxMeanValueDiffAroundPixel(int y,int x,int range);
     int BlobingMaxValueAround(int x,int y, int currentVal);
     void AddBorderingToStack(Point2& pix,TaskStack& stack);
     int GetWhitePixelsAround(int x, int y);
@@ -33,7 +33,7 @@ class Image{
     void ConvertImageToStream(std::vector<uint8_t>& stream);
     void CutImage(Image& dest);
     void FitIntoImage(Image& src);
-    void EdgeDetection(int tolerance=0);
+    void EdgeDetection(int tolerance=0, int range=1);
     void BlobEdges(int blobing=2);
     void FilterOutNoise(int minimumPixelThreshold=0); 
     void Antialiasing(int iterations);

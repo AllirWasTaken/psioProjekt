@@ -12,6 +12,7 @@ void Config::SetDefault(){
     debugMode=0;
 
     edgeDetectionThreshold=100;
+    edgeRange=1;
     blobEdgesAmount=2;
     filterNoiseThreshold=2500;
     antialiasingIterations=0;

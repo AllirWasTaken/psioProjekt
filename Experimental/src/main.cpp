@@ -49,7 +49,7 @@ try
         else{
             //Main loop for program
             //Image processing for detection
-            workImage.EdgeDetection(config.edgeDetectionThreshold);
+            workImage.EdgeDetection(config.edgeDetectionThreshold,config.edgeRange);
             workImage.BlobEdges(config.blobEdgesAmount);
             workImage.FilterOutNoise(config.filterNoiseThreshold);
             workImage.Antialiasing(config.antialiasingIterations);
