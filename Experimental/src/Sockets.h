@@ -1,4 +1,5 @@
 #pragma once
+#include <atomic>
 #include <string>
 #include <winsock2.h>
 #include <cstdint>
@@ -13,14 +14,14 @@ class SocketServer{
     WSADATA wsa;
 	SOCKET s,client;
     sockaddr_in service;
-    bool isSocektOpen=false;
+    std::atomic<bool> isSocketOpen = false;
 
-    public:
+public:
     SocketServer(int port);
     ~SocketServer();
+    void closeSocket();
+    void shutdown();
     void WaitForClientToConnect();
     void SendData(std::vector<uint8_t>& dataVector);
     int ReciveData(std::vector<uint8_t>& dataVector);
-
-
 };
