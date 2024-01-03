@@ -81,10 +81,12 @@ void Image::FitIntoImage(Image& src){
     }
 }
 
-int Image::MaxMeanValueDiffAroundPixel(int x, int y, int range){
+int Image::MaxMeanValueDiffAroundPixel(int x, int y){
     int result=0;
-    int safetyCheck=1;
-    
+
+
+
+
     //up
     if(y>0){
         result+=abs(imageData[y-1][x].r-imageData[y][x].r);
@@ -133,12 +135,14 @@ int Image::MaxMeanValueDiffAroundPixel(int x, int y, int range){
         result+=abs(imageData[y+1][x+1].g-imageData[y][x].g);
         result+=abs(imageData[y+1][x+1].b-imageData[y][x].b);
     }
+
     result/=2;
+
     if(result>255)result=255;
     return result;
 }
 
-void Image::EdgeDetection(int tolerance, int range){
+void Image::EdgeDetection(int tolerance){
     for(int y=0;y<imageY;y++){
         for(int x=0;x<imageX;x++){
             tempImageData[y][x]=0;
@@ -147,7 +151,7 @@ void Image::EdgeDetection(int tolerance, int range){
 
     for(int y=0;y<imageY;y++){
         for(int x=0;x<imageX;x++){
-            tempImageData[y][x]=MaxMeanValueDiffAroundPixel(x,y,range);
+            tempImageData[y][x]=MaxMeanValueDiffAroundPixel(x,y);
         }
     }
 
@@ -363,13 +367,34 @@ int Image::Width(){
 }
 
 
-void Image::DrawSquare(int x,int y,int size){
-    x-=size/2;
-    y-=size/2;
-    for(int j=0;j<size;j++){
-        for(int i=0;i<size;i++){
-            imageData[y+j][x+i]=0;
-            imageData[y+j][x+i].g=255;
+void Image::DrawSquare(int x,int y,int width,int height){
+    x-=width/2;
+    y-=height/2;
+    int posX,posY;
+    for(int j=0;j<height;j++){
+        posY=j+y;
+        posX=x;
+        if(posY<imageY-1&&posY>0&&posX>0&&posX<imageX-1) {
+            imageData[posY][posX] = 0;
+            imageData[posY][posX].g = 255;
+        }
+        posX=x+width;
+        if(posY<imageY-1&&posY>0&&posX>0&&posX<imageX-1) {
+            imageData[posY][posX] = 0;
+            imageData[posY][posX].g = 255;
+        }
+    }
+    for(int i=0;i<width;i++){
+        posY=y;
+        posX=i+x;
+        if(posY<imageY-1&&posY>0&&posX>0&&posX<imageX-1) {
+            imageData[y][i + x] = 0;
+            imageData[y][i + x].g = 255;
+        }
+        posY=y+height;
+        if(posY<imageY-1&&posY>0&&posX>0&&posX<imageX-1) {
+            imageData[y + height][i + x] = 0;
+            imageData[y + height][i + x].g = 255;
         }
     }
 }

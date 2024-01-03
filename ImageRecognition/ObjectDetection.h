@@ -16,6 +16,7 @@ class Object{
 
 class ObjectDetection{
     private:
+    TaskStack stack;
     int idCount;
     std::vector<Object> objects;
     void DeepSearchSetValue(Image& image,TaskStack& stack,int find,int set);

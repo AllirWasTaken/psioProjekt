@@ -36,8 +36,7 @@ void TaskStack::Push(Point2& a){
 }
 
 bool TaskStack::isEmpty(){
-    if(!top)return true;
-    return false;
+    return !top;
 }
 
 void TaskStack::EmptyTheStack(){

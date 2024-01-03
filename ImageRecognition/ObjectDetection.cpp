@@ -1,15 +1,16 @@
 #include "ObjectDetection.h"
 #include "memory.h"
-
+#include <chrono>
+#include <iostream>
 
 void ObjectDetection::DeepSearchSetValue(Image& image,TaskStack& stack,int find,int set){
     Point2 temp;
+    int imageY=image.Height();
+    int imageX=image.Width();
     while(!stack.isEmpty()){
         stack.Pop(temp);
         int y=temp.y;
         int x=temp.x;
-        int imageY=image.Height();
-        int imageX=image.Width();
         image[y][x].r=set;
         if(y>0){
             if(image[y-1][x].r==find){
@@ -48,12 +49,13 @@ void ObjectDetection::DeepSearchSetValue(Image& image,TaskStack& stack,int find,
 
 void ObjectDetection::DeepSearchSetValueAndAddToStack(Image& image, TaskStack& stack, TaskStack& resultStack, int find,int set){
     Point2 temp;
+    int imageY=image.Height();
+    int imageX=image.Width();
     while(!stack.isEmpty()){
         stack.Pop(temp);
         int y=temp.y;
         int x=temp.x;
-        int imageY=image.Height();
-        int imageX=image.Width();
+
         image[y][x].r=set;
         resultStack.Push(temp);
         if(y>0){
@@ -103,7 +105,7 @@ void ObjectDetection::DetectObjects(Image& image,int filterThreshold){
         image[image.Height()-1][x].r=EDGE_COLOR;
     }
 
-    TaskStack stack;
+
     Point2 currentPonit;
 
 
@@ -216,7 +218,7 @@ void Object::CalculateVariables(){
     pos.y=countY/bodyPixels.size();
 
     height=maxPos.y-minPos.y;
-    width=maxPos.x-minPos.y;
+    width=maxPos.x-minPos.x;
 
 }
 

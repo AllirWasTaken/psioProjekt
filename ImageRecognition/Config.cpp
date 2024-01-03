@@ -6,18 +6,17 @@ void Config::SetDefault(){
     videoY=720;
     videoX=1280;
     videoWorkY=700;
-    videoWorkX=700;
+    videoWorkX=1200;
 
     calibrationMode=0;
     debugMode=0;
 
-    edgeDetectionThreshold=100;
-    edgeRange=1;
+    edgeDetectionThreshold=40;
     blobEdgesAmount=0;
-    filterNoiseThreshold=2500;
+    filterNoiseThreshold=5000;
     antialiasingIterations=0;
 
-    ObjectNoiseThreshold=10000;
+    ObjectNoiseThreshold=20000;
     detectObjects=1;
 
     end=std::chrono::high_resolution_clock::now();

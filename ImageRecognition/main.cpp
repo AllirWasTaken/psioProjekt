@@ -47,18 +47,20 @@ try
         else{
             //Main loop for program
             //Image processing for detection
-            workImage.EdgeDetection(config.edgeDetectionThreshold,config.edgeRange);
-            workImage.BlobEdges(config.blobEdgesAmount);
+            workImage.EdgeDetection(config.edgeDetectionThreshold);
             workImage.FilterOutNoise(config.filterNoiseThreshold);
-            workImage.Antialiasing(config.antialiasingIterations);
 
             //Detecting objects in image
             if(config.detectObjects){
+
                 detector.DetectObjects(workImage,config.ObjectNoiseThreshold);
+
             }
 
             if(config.debugMode&&config.detectObjects){
+
                 detector.DrawObjects(workImage);
+
             }
             detector.CalculateObjectsVariables();
 
@@ -73,7 +75,8 @@ try
         else{
             detector.OffestObjects((config.videoX-config.videoWorkX)/2, (config.videoY-config.videoWorkY)/2);
             for(int i=0;i<detector.GetObjects().size();i++){
-                image.DrawSquare(detector.GetObjects()[i].pos.x,detector.GetObjects()[i].pos.y,10);
+                Object & tempObj=detector.GetObjects()[i];
+                image.DrawSquare(tempObj.pos.x,tempObj.pos.y,tempObj.width,tempObj.height);
             }
         }
         config.MeasureFps();
