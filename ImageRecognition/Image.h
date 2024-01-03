@@ -29,8 +29,8 @@ class Image{
 
     public:
     Image(int x,int y);
-    void ConvertStreamToImage(std::vector<uint8_t>& stream);
-    void ConvertImageToStream(std::vector<uint8_t>& stream);
+    void ConvertStreamToImage(const unsigned char* stream);
+    void ConvertImageToStream(unsigned char* stream);
     void CutImage(Image& dest);
     void FitIntoImage(Image& src);
     void EdgeDetection(int tolerance=0, int range=1);

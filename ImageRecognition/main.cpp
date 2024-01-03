@@ -5,6 +5,7 @@
 #include "Config.h"
 #include "ObjectDetection.h"
 #include "Image.h"
+#include "StreamReciver.h"
 
 
 // Has to be after winsock2.h
@@ -14,6 +15,7 @@
 void ImageProcessingService(std::stop_token stopToken, Config& config)
 try
 {
+    CameraStream camera;
     config.fps = 0;
     std::vector<uint8_t> buffer;
     Image image(config.videoX,config.videoY);
@@ -23,9 +25,11 @@ try
 
     while(config.work){
         //Recive frame from frontEnd
-        config.MeasureFps();
 
-        image.ConvertStreamToImage(buffer);
+        config.MeasureTransfer();
+        camera.GetFrame(image);
+        config.MeasureTransfer();
+        config.MeasureFps();
         // Cut originalImage to smaller size to limit detection area
         image.CutImage(workImage);
 
@@ -72,10 +76,9 @@ try
                 image.DrawSquare(detector.GetObjects()[i].pos.x,detector.GetObjects()[i].pos.y,10);
             }
         }
-
+        config.MeasureFps();
         // Send frame to frontEnd
-        image.ConvertImageToStream(buffer);
-        config.MeasureTime();
+        camera.DisplayFrame(image);
     }
     exit(0);
 }
@@ -170,30 +173,39 @@ void Settings(Config &config)
     }
 
 }
-
-void FpsDisplayFunc(std::stop_token stopToken, const Config& config)
+struct ThreadPack{
+    int work;
+    Config& config;
+};
+void FpsDisplayFunc(ThreadPack* pack)
 {
+
+
     system("cls");
     COORD pos = {0, 0};
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-    while (!stopToken.stop_requested())
+    while (pack->work)
     {
         SetConsoleCursorPosition(hConsole, pos);
-        float delivery=1000/config.fps;
-        delivery=delivery-config.time;
-        std::cout<<"fps: "<<config.fps<<"   \n";
-        std::cout<<"processing time ms: "<<config.time<<"   \n";
-        std::cout<<"data delivery time ms:"<<delivery<<"    \n";
+        std::cout<<"fps: "<<pack->config.fps<<"   \n";
+        std::cout<<"processing time ms: "<<pack->config.time<<"   \n";
+        std::cout<<"data transfer time ms: "<<pack->config.transferTime<<"   \n";
         std::cout<<"Press Enter to leave fps view\n";
 
         Sleep(50);
     }
 }
-void FpsFunc(const Config& config)
+void FpsFunc(Config& config)
 {
-    std::jthread fpsDisplayThread(FpsDisplayFunc, config);
+    ThreadPack pack{
+        .work=1,
+        .config=config
+    };
+    std::thread fpsDisplayThread(FpsDisplayFunc, &pack);
     while (getchar() != '\n');
+    pack.work=0;
+    fpsDisplayThread.join();
 }
 void Help()
 {

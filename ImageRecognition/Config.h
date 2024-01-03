@@ -8,9 +8,10 @@ bool work;
 //Fps measurement
 float fps;
 float time;
-std::chrono::high_resolution_clock::time_point start,end;
+float transferTime;
+std::chrono::high_resolution_clock::time_point start,end,transferStart,transferEnd;
 void MeasureFps();
-void MeasureTime();
+void MeasureTransfer();
 //Settings
 void SetDefault();
 int videoY;

@@ -10,7 +10,7 @@ include_directories( ${OpenCV_INCLUDE_DIRS} )
 
 
 add_executable(ImageRecognition
-        test.cpp
+        main.cpp
         Config.cpp
         Config.h
         Image.cpp
@@ -19,6 +19,8 @@ add_executable(ImageRecognition
         ObjectDetection.h
         TaskStack.cpp
         TaskStack.h
+        StreamReciver.cpp
+        StreamReciver.h
 )
 target_link_libraries (ImageRecognition ${OpenCV_LIBS})
 

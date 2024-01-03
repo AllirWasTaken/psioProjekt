@@ -31,7 +31,7 @@ std::vector<Pixel>& Image::operator[](int index){
     return imageData[index];
 }
 
-void Image::ConvertStreamToImage(std::vector<uint8_t>& stream){
+void Image::ConvertStreamToImage(const unsigned char* stream){
     int streamCounter=0;
     for(int y=0;y<imageY;y++){
         for(int x=0;x<imageX;x++){
@@ -43,7 +43,7 @@ void Image::ConvertStreamToImage(std::vector<uint8_t>& stream){
     }
 }
 
-void Image::ConvertImageToStream(std::vector<uint8_t>& stream){
+void Image::ConvertImageToStream(unsigned char* stream){
     int streamCounter=0;
     for(int y=0;y<imageY;y++){
         for(int x=0;x<imageX;x++){
