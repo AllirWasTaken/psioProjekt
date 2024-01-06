@@ -7,6 +7,8 @@ public:
     CameraStream();
     void GetFrame(Image& image);
     void DisplayFrame(Image& image);
+    void GetEdgedImage(Image& image, int threshold1, int threshold2);
 private:
-    cv::Mat conversionImage;
+    cv::Mat raw;
+    cv::Mat edged;
 };

@@ -11,12 +11,18 @@ CameraStream::CameraStream() {
 
 
 void CameraStream::DisplayFrame(Image &image) {
-    image.ConvertImageToStream(conversionImage.data);
-    cv::imshow("Camera", conversionImage);
+    image.ConvertImageToStream(raw.data);
+    cv::imshow("Camera", raw);
     cv::waitKey(1);
 }
 
 void CameraStream::GetFrame(Image &image) {
-    handle.read(conversionImage);
-    image.ConvertStreamToImage(conversionImage.data);
+    handle.read(raw);
+    image.ConvertStreamToImage(raw.data);
+}
+
+void CameraStream::GetEdgedImage(Image &image, int threshold1, int threshold2) {
+    cv::Canny(raw,edged,threshold1,threshold2);
+    image.ConvertStreamToImage(edged.data,1);
+    image.ConvertCannyDetectionToNormal();
 }

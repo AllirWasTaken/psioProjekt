@@ -19,6 +19,7 @@ try
     config.fps = 0;
     std::vector<uint8_t> buffer;
     Image image(config.videoX,config.videoY);
+    Image edgedImage(config.videoX,config.videoY);
     Image workImage(config.videoWorkX,config.videoWorkY);
     ObjectDetection detector;
 
@@ -28,10 +29,11 @@ try
 
         config.MeasureTransfer();
         camera.GetFrame(image);
+        camera.GetEdgedImage(edgedImage,config.edgeDetectionThreshold1,config.edgeDetectionThreshold2);
         config.MeasureTransfer();
         config.MeasureFps();
         // Cut originalImage to smaller size to limit detection area
-        image.CutImage(workImage);
+        edgedImage.CutImage(workImage,10,10);
 
         if (config.calibrationMode)
         {
@@ -47,7 +49,7 @@ try
         else{
             //Main loop for program
             //Image processing for detection
-            workImage.EdgeDetection(config.edgeDetectionThreshold);
+            workImage.BlobEdges(config.blobEdgesAmount);
             workImage.FilterOutNoise(config.filterNoiseThreshold);
 
             //Detecting objects in image
@@ -70,7 +72,7 @@ try
         if (config.debugMode || config.calibrationMode)
         {
             // Fit for debuging
-            image.FitIntoImage(workImage);
+            image.FitIntoImage(workImage,10,10);
         }
         else{
             detector.OffestObjects((config.videoX-config.videoWorkX)/2, (config.videoY-config.videoWorkY)/2);
@@ -102,10 +104,10 @@ void Settings(Config &config)
     system("cls");
     std::cout<<"Select setting to change or click enter to return\n\n";
     std::cout<<"command|variable name|current value\n\n";
-    std::cout<<"edge|edgeDetectionThreshold|"<<config.edgeDetectionThreshold<<"\n";
+    std::cout<<"edge1|edgeDetectionThreshold1|"<<config.edgeDetectionThreshold1<<"\n";
+    std::cout<<"edge2|edgeDetectionThreshold2|"<<config.edgeDetectionThreshold2<<"\n";
     std::cout<<"blob|blobEdgesAmount|"<<config.blobEdgesAmount<<"\n";
     std::cout<<"filter|filterNoiseThreshold|"<<config.filterNoiseThreshold<<"\n";
-    std::cout<<"anti|antialiasingIterations|"<<config.antialiasingIterations<<"\n";
     std::cout<<"objfilter|ObjectNoiseThreshold|"<<config.ObjectNoiseThreshold<<"\n";
     std::cout<<"detect|detectObjects|"<<config.detectObjects<<"\n";
     std::cout<<">>";
@@ -118,7 +120,7 @@ void Settings(Config &config)
     while (getchar() != '\n')
         ;
     command = commandbuffer;
-    if (command == "edge")
+    if (command == "edge1")
     {
         commandSelected = 1;
     }
@@ -136,7 +138,7 @@ void Settings(Config &config)
     else if(command=="detect"){
         commandSelected=6;
     }
-    else if(command=="anti"){
+    else if(command=="edge2"){
         commandSelected=4;
     }
     else
@@ -147,14 +149,13 @@ void Settings(Config &config)
     std::cout << "Give new value for setting:\n>>";
     int newValue;
     int check = scanf("%d", &newValue);
-    while (getchar() != '\n')
-        ;
+    while (getchar() != '\n');
     if (!check)
         return;
 
     if (commandSelected == 1)
     {
-        config.edgeDetectionThreshold = newValue;
+        config.edgeDetectionThreshold1 = newValue;
     }
     else if (commandSelected == 2)
     {
@@ -166,7 +167,7 @@ void Settings(Config &config)
     }
     else if (commandSelected == 4)
     {
-        config.antialiasingIterations = newValue;
+        config.edgeDetectionThreshold2 = newValue;
     }
     else if(commandSelected==5){
         config.ObjectNoiseThreshold=newValue;

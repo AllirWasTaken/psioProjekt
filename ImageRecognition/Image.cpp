@@ -31,14 +31,24 @@ std::vector<Pixel>& Image::operator[](int index){
     return imageData[index];
 }
 
-void Image::ConvertStreamToImage(const unsigned char* stream){
+void Image::ConvertStreamToImage(const unsigned char* stream,int colorChanelCount){
     int streamCounter=0;
-    for(int y=0;y<imageY;y++){
-        for(int x=0;x<imageX;x++){
-            imageData[y][x].b=stream[streamCounter+0];
-            imageData[y][x].g=stream[streamCounter+1];
-            imageData[y][x].r=stream[streamCounter+2];
-            streamCounter+=3;
+    if(colorChanelCount==3) {
+        for (int y = 0; y < imageY; y++) {
+            for (int x = 0; x < imageX; x++) {
+                imageData[y][x].b = stream[streamCounter + 0];
+                imageData[y][x].g = stream[streamCounter + 1];
+                imageData[y][x].r = stream[streamCounter + 2];
+                streamCounter += 3;
+            }
+        }
+    }
+    else if(colorChanelCount==1){
+        for (int y = 0; y < imageY; y++) {
+            for (int x = 0; x < imageX; x++) {
+                imageData[y][x] = stream[streamCounter];
+                streamCounter += 1;
+            }
         }
     }
 }
@@ -55,11 +65,25 @@ void Image::ConvertImageToStream(unsigned char* stream){
     }
 }
 
-void Image::CutImage(Image& dest){
-    int ydif=imageY-dest.imageY;
-    int xdif=imageX-dest.imageX;
-    ydif/=2;
-    xdif/=2;
+void Image::CutImage(Image& dest,int beginX,int beginY){
+    int ydif,xdif;
+
+    if(beginY==-1) {
+        ydif = imageY - dest.imageY;
+        ydif/=2;
+    }
+    else {
+        xdif=beginX;
+    }
+    if(beginX==-1) {
+        xdif = imageX - dest.imageX;
+        xdif/=2;
+    }
+    else{
+        ydif=beginY;
+    }
+
+
 
     for(int y=0;y<dest.imageY;y++){
         for(int x=0;x<dest.imageX;x++){
@@ -68,11 +92,23 @@ void Image::CutImage(Image& dest){
     }
 }
 
-void Image::FitIntoImage(Image& src){
-    int ydif=imageY-src.imageY;
-    int xdif=imageX-src.imageX;
-    ydif/=2;
-    xdif/=2;
+void Image::FitIntoImage(Image& src,int beginX,int beginY){
+    int ydif,xdif;
+
+    if(beginY==-1) {
+        ydif = imageY - src.imageY;
+        ydif/=2;
+    }
+    else {
+        xdif=beginX;
+    }
+    if(beginX==-1) {
+        xdif = imageX - src.imageX;
+        xdif/=2;
+    }
+    else{
+        ydif=beginY;
+    }
 
     for(int y=0;y<src.imageY;y++){
         for(int x=0;x<src.imageX;x++){
@@ -189,6 +225,7 @@ if(tempImageData[y+1][x].r>currentVal)return currentVal;
 }
 
 void Image::BlobEdges(int blobing){
+    tempImageData=imageData;
     if(!blobing)return;
     for(int y=0;y<imageY;y++){
         for(int x=0;x<imageX;x++){
@@ -246,6 +283,38 @@ void Image::AddBorderingToStack(Point2& pix,TaskStack& stack){
       if(tempImageData[y][x-1].r==EDGE_COLOR){
             temp.x=x-1;
             temp.y=y;
+            stack.Push(temp);
+        }
+    }
+    //up left
+    if(y>0&&x>0){
+        if(tempImageData[y-1][x-1].r==EDGE_COLOR){
+            temp.x=x-1;
+            temp.y=y-1;
+            stack.Push(temp);
+        }
+    }
+    //up right
+    if(x<imageX-1&&y>0){
+        if(tempImageData[y-1][x+1].r==EDGE_COLOR){
+            temp.x=x+1;
+            temp.y=y-1;
+            stack.Push(temp);
+        }
+    }
+    //down left
+    if(y<imageY-1&&x>0){
+        if(tempImageData[y+1][x-1].r==EDGE_COLOR){
+            temp.x=x-1;
+            temp.y=y+1;
+            stack.Push(temp);
+        }
+    }
+    //down right
+    if(y<imageY-1&&x<imageX-1){
+        if(tempImageData[y+1][x+1].r==EDGE_COLOR){
+            temp.x=x+1;
+            temp.y=y+1;
             stack.Push(temp);
         }
     }
@@ -395,6 +464,14 @@ void Image::DrawSquare(int x,int y,int width,int height){
         if(posY<imageY-1&&posY>0&&posX>0&&posX<imageX-1) {
             imageData[y + height][i + x] = 0;
             imageData[y + height][i + x].g = 255;
+        }
+    }
+}
+
+void Image::ConvertCannyDetectionToNormal() {
+    for(int y=0;y<imageY;y++) {
+        for (int x = 0; x < imageX; x++) {
+            if(imageData[y][x].r)imageData[y][x]=EDGE_COLOR;
         }
     }
 }

@@ -29,14 +29,15 @@ class Image{
 
     public:
     Image(int x,int y);
-    void ConvertStreamToImage(const unsigned char* stream);
+    void ConvertStreamToImage(const unsigned char* stream,int colorChanelCount=3);
     void ConvertImageToStream(unsigned char* stream);
-    void CutImage(Image& dest);
-    void FitIntoImage(Image& src);
+    void CutImage(Image& dest, int beginX=-1,int beginY=-1);
+    void FitIntoImage(Image& src,int beginX=-1,int beginY=-1);
     void EdgeDetection(int tolerance=0);
     void BlobEdges(int blobing=2);
     void FilterOutNoise(int minimumPixelThreshold=0); 
     void Antialiasing(int iterations);
+    void ConvertCannyDetectionToNormal();
     int Height();
     int Width();
     void DrawSquare(int x,int y,int width,int height);

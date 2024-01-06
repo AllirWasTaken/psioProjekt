@@ -22,10 +22,10 @@ int videoWorkX;
 int calibrationMode;
 int debugMode;
 
-int edgeDetectionThreshold;
+int edgeDetectionThreshold1;
+int edgeDetectionThreshold2;
 int blobEdgesAmount;
 int filterNoiseThreshold;
-int antialiasingIterations;
 
 int ObjectNoiseThreshold;
 int detectObjects;
