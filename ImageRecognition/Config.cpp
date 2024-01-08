@@ -20,7 +20,6 @@ void Config::SetDefault(){
     detectObjects=1;
 
     end=std::chrono::high_resolution_clock::now();
-    work=true;
 }
 
 

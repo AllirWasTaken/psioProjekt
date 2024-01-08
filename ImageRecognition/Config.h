@@ -3,8 +3,6 @@
 
 class Config{
 public:
-//work control
-bool work;
 //Fps measurement
 float fps;
 float time;

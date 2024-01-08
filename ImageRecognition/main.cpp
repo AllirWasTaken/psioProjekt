@@ -24,7 +24,7 @@ try
     ObjectDetection detector;
 
 
-    while(config.work){
+    while(!stopToken.stop_requested()){
         //Recive frame from frontEnd
 
         config.MeasureTransfer();
@@ -177,40 +177,31 @@ void Settings(Config &config)
     }
 
 }
-struct ThreadPack{
-    int work;
-    Config& config;
-};
-void FpsDisplayFunc(ThreadPack* pack)
+
+void FpsDisplayFunc(std::stop_token stopToken, Config& config)
 {
-
-
     system("cls");
     COORD pos = {0, 0};
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-    while (pack->work)
+    while (!stopToken.stop_requested())
     {
         SetConsoleCursorPosition(hConsole, pos);
-        std::cout<<"fps: "<<pack->config.fps<<"   \n";
-        std::cout<<"processing time ms: "<<pack->config.time<<"   \n";
-        std::cout<<"data transfer time ms: "<<pack->config.transferTime<<"   \n";
-        std::cout<<"Press Enter to leave fps view\n";
+        std::cout << "fps: " << config.fps << "   \n";
+        std::cout << "processing time ms: " << config.time << "   \n";
+        std::cout << "data transfer time ms: " << config.transferTime << "   \n";
+        std::cout << "Press Enter to leave fps view\n";
 
         Sleep(50);
     }
 }
+
 void FpsFunc(Config& config)
 {
-    ThreadPack pack{
-        .work=1,
-        .config=config
-    };
-    std::thread fpsDisplayThread(FpsDisplayFunc, &pack);
+    std::jthread fpsDisplayThread(FpsDisplayFunc, std::ref(config));
     while (getchar() != '\n');
-    pack.work=0;
-    fpsDisplayThread.join();
 }
+
 void Help()
 {
     std::cout << "You can use following commands:\n\t";
@@ -313,7 +304,7 @@ try
         }
         else if (command == "exit")
         {
-            config.work = false;
+            serviceThread.request_stop();
             break;
         }
         else
