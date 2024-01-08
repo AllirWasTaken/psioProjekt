@@ -14,9 +14,9 @@ void Config::SetDefault(){
     edgeDetectionThreshold1=180;
     edgeDetectionThreshold2=90;
     blobEdgesAmount=2;
-    filterNoiseThreshold=2000;
+    filterNoiseThreshold=500;
 
-    ObjectNoiseThreshold=20000;
+    ObjectNoiseThreshold=5000;
     detectObjects=1;
 
     end=std::chrono::high_resolution_clock::now();

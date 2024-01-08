@@ -33,7 +33,7 @@ try
         config.MeasureTransfer();
         config.MeasureFps();
         // Cut originalImage to smaller size to limit detection area
-        edgedImage.CutImage(workImage,10,10);
+        edgedImage.CutImage(workImage);
 
         if (config.calibrationMode)
         {
@@ -72,7 +72,7 @@ try
         if (config.debugMode || config.calibrationMode)
         {
             // Fit for debuging
-            image.FitIntoImage(workImage,10,10);
+            image.FitIntoImage(workImage);
         }
         else{
             detector.OffestObjects((config.videoX-config.videoWorkX)/2, (config.videoY-config.videoWorkY)/2);
