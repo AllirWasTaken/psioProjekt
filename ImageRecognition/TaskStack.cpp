@@ -3,10 +3,10 @@
 
 
 
-TaskStack::TaskStack(){
-    data=new Point2[100];
+TaskStack::TaskStack(int size){
+    data=new Point2[size];
     top=0;
-    size=100;
+    this->size=size;
 }
 
 TaskStack::~TaskStack(){

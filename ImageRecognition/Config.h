@@ -28,6 +28,9 @@ int filterNoiseThreshold;
 int ObjectNoiseThreshold;
 int detectObjects;
 
+int typeThreshold;
+int percentageOfObjectColorAnalyzed;
+
 
 
 

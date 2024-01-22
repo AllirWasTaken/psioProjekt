@@ -5,8 +5,8 @@
 void Config::SetDefault(){
     videoY=720;
     videoX=1280;
-    videoWorkY=640;
-    videoWorkX=640;
+    videoWorkY=700;
+    videoWorkX=1200;
 
     calibrationMode=0;
     debugMode=0;
@@ -18,6 +18,9 @@ void Config::SetDefault(){
 
     ObjectNoiseThreshold=5000;
     detectObjects=1;
+
+    typeThreshold=50;
+    percentageOfObjectColorAnalyzed=10;
 
     end=std::chrono::high_resolution_clock::now();
 }

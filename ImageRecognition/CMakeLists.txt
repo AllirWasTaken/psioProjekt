@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.27)
+cmake_minimum_required(VERSION 3.26)
 project(ImageRecognition)
 
 set(CMAKE_CXX_STANDARD 23)
@@ -21,6 +21,10 @@ add_executable(ImageRecognition
         TaskStack.h
         StreamReciver.cpp
         StreamReciver.h
+        ObjectClassifier.cpp
+        ObjectClassifier.h
+        Labeler.cpp
+        Labeler.h
 )
 target_link_libraries (ImageRecognition ${OpenCV_LIBS})
 

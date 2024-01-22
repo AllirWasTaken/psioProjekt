@@ -10,6 +10,7 @@ class Object{
     Point2 minPos;
     Point2 pos;
     int height,width;
+    int type=0;
 
 };
 
@@ -30,5 +31,6 @@ class ObjectDetection{
     //void MakeNewEdge(Image& image,int thickness);
     void CalculateObjectsVariables();
     void OffestObjects(int x,int y);
-    std::vector<Object>& GetObjects();
+    Object& operator[](int index);
+    int Size();
 };

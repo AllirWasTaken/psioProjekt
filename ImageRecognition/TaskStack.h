@@ -17,7 +17,9 @@ class TaskStack{
     
 
     public:
-    TaskStack();
+    TaskStack(int size=100);
+    TaskStack(TaskStack& stack);
+    TaskStack& operator=(TaskStack& stack);
     ~TaskStack();
     void Pop(Point2& a);
     void Push(Point2& a);

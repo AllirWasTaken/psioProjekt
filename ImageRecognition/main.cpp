@@ -6,6 +6,8 @@
 #include "ObjectDetection.h"
 #include "Image.h"
 #include "StreamReciver.h"
+#include "Labeler.h"
+#include "ObjectClassifier.h"
 
 
 // Has to be after winsock2.h
@@ -21,7 +23,13 @@ try
     Image image(config.videoX,config.videoY);
     Image edgedImage(config.videoX,config.videoY);
     Image workImage(config.videoWorkX,config.videoWorkY);
+    Image colorCut(config.videoWorkX,config.videoWorkY);
     ObjectDetection detector;
+    ObjectClassifier classifier;
+    Labeler labeler("../labels/");
+    classifier.AnalyzeSavedSamples("../samples/");
+    TaskStack helperStack(1000);
+
 
 
     while(!stopToken.stop_requested()){
@@ -50,7 +58,7 @@ try
             //Main loop for program
             //Image processing for detection
             workImage.BlobEdges(config.blobEdgesAmount);
-            workImage.FilterOutNoise(config.filterNoiseThreshold);
+            workImage.FilterOutNoise(helperStack,config.filterNoiseThreshold);
 
             //Detecting objects in image
             if(config.detectObjects){
@@ -65,8 +73,10 @@ try
 
             }
             detector.CalculateObjectsVariables();
-
-            // Detecting objects in image
+            image.CutImage(colorCut);
+            for(int i=0;i<detector.Size();i++){
+                classifier.AnalyzeAndCategorize(colorCut,detector[i]);
+            }
         }
 
         if (config.debugMode || config.calibrationMode)
@@ -76,9 +86,8 @@ try
         }
         else{
             detector.OffestObjects((config.videoX-config.videoWorkX)/2, (config.videoY-config.videoWorkY)/2);
-            for(int i=0;i<detector.GetObjects().size();i++){
-                Object & tempObj=detector.GetObjects()[i];
-                image.DrawSquare(tempObj.pos.x,tempObj.pos.y,tempObj.width,tempObj.height);
+            for(int i=0;i<detector.Size();i++){
+                labeler.Label(image,detector[i]);
             }
         }
         config.MeasureFps();

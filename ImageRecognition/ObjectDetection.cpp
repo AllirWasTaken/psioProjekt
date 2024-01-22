@@ -222,9 +222,6 @@ void Object::CalculateVariables(){
 
 }
 
-std::vector<Object>& ObjectDetection::GetObjects(){
-    return objects;
-}
 
 
 void ObjectDetection::OffestObjects(int x,int y){
@@ -236,4 +233,12 @@ void ObjectDetection::OffestObjects(int x,int y){
         objects[i].pos.x+=x;
         objects[i].pos.y+=y;
     }
+}
+
+Object &ObjectDetection::operator[](int index) {
+    return objects[index];
+}
+
+int ObjectDetection::Size() {
+    return objects.size();
 }

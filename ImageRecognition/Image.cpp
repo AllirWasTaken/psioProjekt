@@ -1,7 +1,7 @@
 #include "Image.h"
 #include <cmath>
-
-
+#include <cstdio>
+#include <opencv2/opencv.hpp>
 Pixel& Pixel::operator=(uint8_t a){
     r=a;
     g=a;
@@ -110,9 +110,14 @@ void Image::FitIntoImage(Image& src,int beginX,int beginY){
         ydif=beginY;
     }
 
+    int posX,posY;
     for(int y=0;y<src.imageY;y++){
         for(int x=0;x<src.imageX;x++){
-            imageData[y+ydif][x+xdif]=src[y][x];
+            posX=x+xdif;
+            posY=y+ydif;
+            if(posY<imageY-1&&posY>0&&posX>0&&posX<imageX-1) {
+                imageData[posY][posX] = src[y][x];
+            }
         }
     }
 }
@@ -320,7 +325,7 @@ void Image::AddBorderingToStack(Point2& pix,TaskStack& stack){
     }
 }
 
-void Image::FilterOutNoise(int minimumPixelThreshold){
+void Image::FilterOutNoise(TaskStack &taskStack,int minimumPixelThreshold){
     if(!minimumPixelThreshold)return;
     tempImageData=imageData;
     Point2 tempPoint;
@@ -474,4 +479,63 @@ void Image::ConvertCannyDetectionToNormal() {
             if(imageData[y][x].r)imageData[y][x]=EDGE_COLOR;
         }
     }
+}
+
+struct __attribute__((packed, aligned(1))) BmpHeader{
+    uint16_t signature;
+    uint32_t file_size;
+    uint16_t reserved1;
+    uint16_t reserved2;
+    uint32_t data_offset;
+    uint32_t header_size;
+    uint32_t width;
+    uint32_t height;
+    uint16_t planes;
+    uint16_t bits_per_pixel;
+    uint32_t compression;
+    uint32_t image_size_bytes;
+    uint32_t x_resolution;
+    uint32_t y_resolution;
+    uint32_t number_of_colors;
+    uint32_t important_colors;
+};
+
+struct  __attribute__((packed, aligned(1))) bitPixel{
+    uint8_t b,g,r;
+};
+
+void Image::LoadBmpImage(const char *path) {
+    FILE* f =fopen(path,"rb");
+    if(!f)return;
+    BmpHeader header;
+    fread(&header,sizeof(BmpHeader),1,f);
+
+    Image temp(header.width,header.height);
+    bitPixel *data=new bitPixel[header.width*header.height];
+    fread(data,sizeof(bitPixel),header.width*header.height,f);
+    fclose(f);
+
+    int dataCounter=0;
+    for(int y=0;y<header.height;y++){
+        for(int x=0;x<header.width;x++){
+            temp[header.height-y-1][x].r=data[dataCounter].r;
+            temp[header.height-y-1][x].g=data[dataCounter].g;
+            temp[header.height-y-1][x].b=data[dataCounter].b;
+            dataCounter++;
+        }
+    }
+    delete[] data;
+
+
+
+    *this=temp;
+
+}
+
+Image &Image::operator=(Image &image) {
+    imageX=image.imageX;
+    imageY=image.imageY;
+    imageData=image.imageData;
+    tempImageData=image.tempImageData;
+    return *this;
 }
