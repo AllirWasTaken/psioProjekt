@@ -3,7 +3,7 @@ project(ImageRecognition)
 
 set(CMAKE_CXX_STANDARD 23)
 
-set(OpenCV_DIR ${CMAKE_CURRENT_SOURCE_DIR}/opencv2Libs)
+set(OpenCV_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/opencv2Libs)
 
 find_package( OpenCV REQUIRED )
 include_directories( ${OpenCV_INCLUDE_DIRS} )
