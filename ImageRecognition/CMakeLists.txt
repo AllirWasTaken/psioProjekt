@@ -10,21 +10,18 @@ include_directories( ${OpenCV_INCLUDE_DIRS} )
 
 
 add_executable(ImageRecognition
+        common/async/ThreadPool.cpp
+        detection/ObjectDetection.cpp
+        input/Command.cpp
+        input/CommandLine.cpp
+        network/CameraConnection.cpp
+        ui/Display.cpp
+        ImageDetection.cpp
+        ImageRecognition.cpp
         main.cpp
-        Config.cpp
-        Config.h
-        Image.cpp
-        Image.h
-        ObjectDetection.cpp
-        ObjectDetection.h
-        TaskStack.cpp
-        TaskStack.h
-        StreamReciver.cpp
-        StreamReciver.h
 )
 target_link_libraries (ImageRecognition ${OpenCV_LIBS})
-
-
+target_include_directories(ImageRecognition PRIVATE .)
 
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")

@@ -1,0 +1,10 @@
+Language: Cpp
+BasedOnStyle: WebKit
+
+ColumnLimit: 80
+
+IncludeCategories:
+  - Regex:    '^<'
+    Priority: 1
+  - Regex:    '^"'
+    Priority: 2
