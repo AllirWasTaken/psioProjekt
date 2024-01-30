@@ -1,6 +1,16 @@
 #pragma once
 #include "Image.h"
 
+
+enum FruitType{
+    OBJECT,
+    ORANGE,
+    CITRUS,
+    APPLE,
+    KIWI,
+    AVOCADO
+};
+
 class Object{
     public:
     //std::vector<Point2> edgePixels;
@@ -10,7 +20,7 @@ class Object{
     Point2 minPos;
     Point2 pos;
     int height,width;
-    int type=0;
+    FruitType type=OBJECT;
 
 };
 
@@ -32,5 +42,6 @@ class ObjectDetection{
     void CalculateObjectsVariables();
     void OffestObjects(int x,int y);
     Object& operator[](int index);
+    std::vector<Object>&GetObjs();
     int Size();
 };

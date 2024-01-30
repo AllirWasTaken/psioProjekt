@@ -21,6 +21,7 @@ class Image{
     int imageX,imageY;
     std::vector<std::vector<Pixel>> imageData;
     std::vector<std::vector<Pixel>> tempImageData;
+    Pixel background;
 
     int MaxMeanValueDiffAroundPixel(int y,int x);
     int BlobingMaxValueAround(int x,int y, int currentVal);
@@ -38,6 +39,9 @@ class Image{
     void FilterOutNoise(TaskStack &taskStack,int minimumPixelThreshold=0);
     void Antialiasing(int iterations);
     void LoadBmpImage(const char* path);
+    Pixel AnalzyzeBackground();
+    void SetBackground(Pixel background);
+    void BlobDetectionWithBackground(int tolerance);
     void SaveBmpImage(const char* path);
     void ConvertCannyDetectionToNormal();
     int Height();

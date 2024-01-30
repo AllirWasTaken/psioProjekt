@@ -19,17 +19,22 @@ int videoWorkX;
 
 int calibrationMode;
 int debugMode;
+int analyzeBackground;
 
 int edgeDetectionThreshold1;
 int edgeDetectionThreshold2;
 int blobEdgesAmount;
 int filterNoiseThreshold;
+int backgroundTolerance;
 
 int ObjectNoiseThreshold;
 int detectObjects;
 
 int typeThreshold;
 int percentageOfObjectColorAnalyzed;
+
+bool video;
+
 
 
 

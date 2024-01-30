@@ -3,6 +3,10 @@
 #include <stdexcept>
 
 CameraStream::CameraStream() {
+
+}
+
+void CameraStream::Connect() {
     const std::string videoStreamAddress = []
     {
         const std::string prefix = "http://";
@@ -20,6 +24,12 @@ CameraStream::CameraStream() {
     }
 }
 
+void CameraStream::Video() {
+    const std::string videoStreamAddress = "video.mp4";
+    if(!handle.open(videoStreamAddress)) {
+        throw std::runtime_error("Stream could not open from given url");
+    }
+}
 
 void CameraStream::DisplayFrame(Image &image) {
     image.ConvertImageToStream(raw.data);

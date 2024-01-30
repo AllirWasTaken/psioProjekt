@@ -5,6 +5,8 @@ class CameraStream {
 public:
     cv::VideoCapture handle;
     CameraStream();
+    void Connect();
+    void Video();
     void GetFrame(Image& image);
     void DisplayFrame(Image& image);
     void GetEdgedImage(Image& image, int threshold1, int threshold2);

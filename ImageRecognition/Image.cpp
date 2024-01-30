@@ -25,6 +25,7 @@ Image::Image(int x,int y){
 
     imageX=x;
     imageY=y;
+    background=255;
 }
 
 std::vector<Pixel>& Image::operator[](int index){
@@ -423,7 +424,7 @@ void Image::Antialiasing(int iterations){
 
         for(int y=0;y<imageY;y++){
             for(int x=0;x<imageX;x++){
-                if(tempImageData[y][x].r<5){
+                if(tempImageData[y][x].r<8){
                     imageData[y][x]=0;
                 }
             }
@@ -538,4 +539,60 @@ Image &Image::operator=(Image &image) {
     imageData=image.imageData;
     tempImageData=image.tempImageData;
     return *this;
+}
+
+
+void Image::BlobDetectionWithBackground(int tolerance) {
+    int val;
+
+    int diffRG=abs(background.r-background.g);
+    int diffRB=abs(background.r-background.b);;
+    int diffGB=abs(background.g-background.b);;
+    int counter;
+    for(int y=0;y<imageY;y++){
+        for(int x=0;x<imageX;x++){
+            counter=0;
+
+
+            val=abs(imageData[y][x].r-imageData[y][x].g);
+            if(val>diffRG+tolerance){
+                imageData[y][x]=EDGE_COLOR;
+                continue;
+            }
+
+            val=abs(imageData[y][x].r-imageData[y][x].b);
+            if(val>diffRB+tolerance){
+                imageData[y][x]=EDGE_COLOR;
+                continue;
+            }
+
+            val=abs(imageData[y][x].g-imageData[y][x].g);
+            if(val>diffGB+tolerance){
+                imageData[y][x]=EDGE_COLOR;
+                continue;
+            }
+
+            imageData[y][x]=0;
+        }
+    }
+}
+
+Pixel Image::AnalzyzeBackground() {
+    long long r=0,g=0,b=0;
+    for(int y=0;y<imageY;y++) {
+        for (int x = 0; x < imageX; x++) {
+            r+=imageData[y][x].r;
+            g+=imageData[y][x].g;
+            b+=imageData[y][x].b;
+        }
+    }
+    int dev=imageY*imageX;
+    background.r=r/dev;
+    background.g=g/dev;
+    background.b=b/dev;
+    return background;
+}
+
+void Image::SetBackground(Pixel background) {
+    this->background=background;
 }

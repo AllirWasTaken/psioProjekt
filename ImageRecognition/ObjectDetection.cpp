@@ -95,6 +95,8 @@ void ObjectDetection::DeepSearchSetValueAndAddToStack(Image& image, TaskStack& s
 
 void ObjectDetection::DetectObjects(Image& image,int filterThreshold){
     objects.clear();
+    Point2 currentPonit;
+    /*
     for(int y=0;y<image.Height();y++){
         image[y][0].r=EDGE_COLOR;
         image[y][image.Width()-1].r=EDGE_COLOR;
@@ -104,9 +106,6 @@ void ObjectDetection::DetectObjects(Image& image,int filterThreshold){
         image[0][x].r=EDGE_COLOR;
         image[image.Height()-1][x].r=EDGE_COLOR;
     }
-
-
-    Point2 currentPonit;
 
 
     //0 0 seeker (top left)
@@ -142,18 +141,20 @@ void ObjectDetection::DetectObjects(Image& image,int filterThreshold){
     currentPonit.y=image.Height()-1;
     stack.Push(currentPonit);
 
+
     DeepSearchSetValue(image,stack,0,EDGE_COLOR);
     //Background is filled, time to make objects distinct
 
+     */
     for(int y=0;y<image.Height();y++){
         for(int x=0;x<image.Width();x++){
 
-            if(image[y][x].r==0){
+            if(image[y][x].r==EDGE_COLOR){
                 currentPonit.x=x;
                 currentPonit.y=y;
                 TaskStack tempObjectStack;
                 stack.Push(currentPonit);
-                DeepSearchSetValueAndAddToStack(image,stack,tempObjectStack,0,EDGE_COLOR);
+                DeepSearchSetValueAndAddToStack(image,stack,tempObjectStack,EDGE_COLOR,0);
                 if(tempObjectStack.GetSize()>=filterThreshold){
                     Object newObject;
                     newObject.bodyPixels.resize(tempObjectStack.GetSize());
@@ -241,4 +242,8 @@ Object &ObjectDetection::operator[](int index) {
 
 int ObjectDetection::Size() {
     return objects.size();
+}
+
+std::vector<Object> &ObjectDetection::GetObjs() {
+    return objects;
 }

@@ -3,6 +3,9 @@
 #include "Image.h"
 #include "ObjectDetection.h"
 
+
+
+
 class SampledData{
 public:
     Pixel average;
@@ -10,13 +13,15 @@ public:
 
 class ObjectClassifier {
 private:
-    //static Config *config;
-    SampledData apple,orange,banana,citrus;
+    Config *config;
+    std::vector<SampledData> apple,orange,kiwi,avocado,citrus;
     static SampledData SampleObjectData(Image&image, Object& object);
     static SampledData SampleImageData(Image&image);
+    static bool DoesThisExist(std::string name);
+    static float MatchObject(std::vector<SampledData> data, SampledData object);
 
 public:
-    //ObjectClassifier(Config *configF);
+    ObjectClassifier(Config *configF);
     void AnalyzeAndCategorize(Image& image, Object& object);
     void AnalyzeSavedSamples(const char* path);
 };

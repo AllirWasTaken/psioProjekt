@@ -8,6 +8,7 @@
 #include "StreamReciver.h"
 #include "Labeler.h"
 #include "ObjectClassifier.h"
+#include "Predictor.h"
 
 
 // Has to be after winsock2.h
@@ -24,24 +25,42 @@ try
     Image edgedImage(config.videoX,config.videoY);
     Image workImage(config.videoWorkX,config.videoWorkY);
     Image colorCut(config.videoWorkX,config.videoWorkY);
+    Predictor predictor;
     ObjectDetection detector;
-    ObjectClassifier classifier;
+    ObjectClassifier classifier(&config);
     Labeler labeler("../labels/");
     classifier.AnalyzeSavedSamples("../samples/");
     TaskStack helperStack(1000);
+    Pixel background;
+    background=255;
 
+    if(!config.video){
+        camera.Connect();
+    }
 
 
     while(!stopToken.stop_requested()){
         //Recive frame from frontEnd
 
         config.MeasureTransfer();
-        camera.GetFrame(image);
-        camera.GetEdgedImage(edgedImage,config.edgeDetectionThreshold1,config.edgeDetectionThreshold2);
+        if(config.video){
+
+        }
+        else{
+            camera.GetFrame(image);
+        }
+        //camera.GetEdgedImage(edgedImage,config.edgeDetectionThreshold1,config.edgeDetectionThreshold2);
         config.MeasureTransfer();
         config.MeasureFps();
         // Cut originalImage to smaller size to limit detection area
-        edgedImage.CutImage(workImage);
+        image.CutImage(workImage);
+
+
+        if(config.analyzeBackground){
+            background=workImage.AnalzyzeBackground();
+            config.analyzeBackground=0;
+        }
+        workImage.SetBackground(background);
 
         if (config.calibrationMode)
         {
@@ -57,7 +76,12 @@ try
         else{
             //Main loop for program
             //Image processing for detection
-            workImage.BlobEdges(config.blobEdgesAmount);
+
+            //OLD
+            //workImage.BlobEdges(config.blobEdgesAmount);
+            //END OLD
+
+            workImage.BlobDetectionWithBackground(config.backgroundTolerance);
             workImage.FilterOutNoise(helperStack,config.filterNoiseThreshold);
 
             //Detecting objects in image
@@ -86,6 +110,7 @@ try
         }
         else{
             detector.OffestObjects((config.videoX-config.videoWorkX)/2, (config.videoY-config.videoWorkY)/2);
+            predictor.UpdatePredictor(detector.GetObjs());
             for(int i=0;i<detector.Size();i++){
                 labeler.Label(image,detector[i]);
             }
@@ -216,28 +241,43 @@ void Help()
     std::cout << "You can use following commands:\n\t";
     std::cout << "help "
               << "fps "
-              << "objects "
               << "stats "
               << "settings "
               << "calibration "
               << "debug "
-              << "sample "
               << "clear "
               << "exit "
+              << "analyze"
               << "\n";
 }
 
-void Objects()
+
+void ObjectStatsDisplay(std::stop_token stopToken, Config& config)
 {
+    system("cls");
+    COORD pos = {0, 0};
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    while (!stopToken.stop_requested())
+    {
+        SetConsoleCursorPosition(hConsole, pos);
+        std::cout<<"Apples: "<<Predictor::Get(APPLE)<<std::endl;
+        std::cout<<"Oranges: "<<Predictor::Get(ORANGE)<<std::endl;
+        std::cout<<"Kiwis: "<<Predictor::Get(KIWI)<<std::endl;
+        std::cout<<"Avocados: "<<Predictor::Get(AVOCADO)<<std::endl;
+        std::cout<<"Lemons: "<<Predictor::Get(CITRUS)<<std::endl;
+
+        Sleep(50);
+    }
 }
 
-void ObjectStats()
+
+void ObjectStats(Config& config)
 {
+    std::jthread fpsDisplayThread(ObjectStatsDisplay, std::ref(config));
+    while (getchar() != '\n');
 }
 
-void Sample()
-{
-}
 
 
 
@@ -252,9 +292,26 @@ try
     SetConsoleCursorInfo(hConsole, &cursorInfo);
 
     // Initalization of config and command handling
-
     Config config;
     config.SetDefault();
+    /*
+    std::cout<<"video?"<<std::endl;
+
+    int val=0;
+    scanf("%d",&val);
+    while(getchar()!='\n');
+
+    if(val){
+        config.video=true;
+    }
+    else{
+        config.video=false;
+    }
+    */
+    config.video=false;
+
+
+
     char commandbuffer[101];
     std::string command;
 
@@ -282,9 +339,9 @@ try
             FpsFunc(config);
             system("cls");
         }
-        else if (command == "objects")
+        else if (command == "analyze")
         {
-            Objects();
+            config.analyzeBackground=1;
         }
         else if (command == "settings")
         {
@@ -305,11 +362,7 @@ try
         }
         else if (command == "stats")
         {
-            ObjectStats();
-        }
-        else if (command == "sample")
-        {
-            Sample();
+            ObjectStats(config);
         }
         else if (command == "exit")
         {

@@ -10,17 +10,21 @@ void Config::SetDefault(){
 
     calibrationMode=0;
     debugMode=0;
+    analyzeBackground=0;
 
     edgeDetectionThreshold1=180;
     edgeDetectionThreshold2=90;
     blobEdgesAmount=2;
     filterNoiseThreshold=500;
+    backgroundTolerance=25;
 
     ObjectNoiseThreshold=5000;
     detectObjects=1;
 
-    typeThreshold=50;
+    typeThreshold=70;
     percentageOfObjectColorAnalyzed=10;
+
+
 
     end=std::chrono::high_resolution_clock::now();
 }

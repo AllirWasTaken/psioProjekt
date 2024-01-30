@@ -25,6 +25,8 @@ add_executable(ImageRecognition
         ObjectClassifier.h
         Labeler.cpp
         Labeler.h
+        Predictor.cpp
+        Predictor.h
 )
 target_link_libraries (ImageRecognition ${OpenCV_LIBS})
 
