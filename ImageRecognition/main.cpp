@@ -33,6 +33,7 @@ try
     TaskStack helperStack(1000);
     Pixel background;
     background=255;
+    predictor.Set();
 
     if(!config.video){
         camera.Connect();

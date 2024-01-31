@@ -21,7 +21,7 @@ void Config::SetDefault(){
     ObjectNoiseThreshold=5000;
     detectObjects=1;
 
-    typeThreshold=70;
+    typeThreshold=80;
     percentageOfObjectColorAnalyzed=10;
 
 
