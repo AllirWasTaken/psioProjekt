@@ -58,7 +58,7 @@ void Predictor::CheckObject(Object &obj) {
             if(obj.type!=OBJECT) {
                 if (obj.type == vec[i].type) {
                     vec[i].resistance++;
-                    if (vec[i].resistance > 10)vec[i].resistance = 10;
+                    if (vec[i].resistance > 300)vec[i].resistance = 300;
                 } else {
                     vec[i].resistance--;
                     if (vec[i].resistance < 0) {

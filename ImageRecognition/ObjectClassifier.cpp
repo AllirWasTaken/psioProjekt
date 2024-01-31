@@ -1,6 +1,6 @@
 #include "ObjectClassifier.h"
 #include <string>
-
+#include <cmath>
 
 bool ObjectClassifier::DoesThisExist(std::string name) {
     bool result=true;
@@ -144,7 +144,7 @@ SampledData ObjectClassifier::SampleImageData(Image &image) {
 }
 
 SampledData ObjectClassifier::SampleObjectData(Image &image, Object &object) {
-    int step=100/10;
+    int step=100/100;
     int size=object.bodyPixels.size();
     SampledData result;
     size_t r,g,b;
@@ -202,6 +202,11 @@ SampledData ObjectClassifier::SampleObjectData(Image &image, Object &object) {
     return result;
 }
 
+float my_abs(float x){
+    if(x<0)return x*-1;
+    else return x;
+}
+
 float ObjectClassifier::MatchObject(std::vector<SampledData> data, SampledData object) {
     float max=0;
     std::vector<float> diffR,diffB,diffG;
@@ -209,15 +214,15 @@ float ObjectClassifier::MatchObject(std::vector<SampledData> data, SampledData o
     diffR.resize(255);
     diffG.resize(255);
     diffB.resize(255);
-
+    float temp;
 
     for(int i=0;i<data.size();i++){
 
 
         for(int j=0;j<255;j++){
-            diffR[j]=abs(data[i].histoGraph.r[j]-object.histoGraph.r[j]);
-            diffG[j]=abs(data[i].histoGraph.g[j]-object.histoGraph.g[j]);
-            diffB[j]=abs(data[i].histoGraph.b[j]-object.histoGraph.b[j]);
+            diffR[j]=my_abs(data[i].histoGraph.r[j]-object.histoGraph.r[j]);
+            diffG[j]=my_abs(data[i].histoGraph.g[j]-object.histoGraph.g[j]);
+            diffB[j]=my_abs(data[i].histoGraph.b[j]-object.histoGraph.b[j]);
         }
 
         match =1;

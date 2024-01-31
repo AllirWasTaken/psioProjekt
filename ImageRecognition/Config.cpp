@@ -5,8 +5,8 @@
 void Config::SetDefault(){
     videoY=720;
     videoX=1280;
-    videoWorkY=700;
-    videoWorkX=1200;
+    videoWorkY=420;
+    videoWorkX=1000;
 
     calibrationMode=0;
     debugMode=0;
@@ -16,12 +16,12 @@ void Config::SetDefault(){
     edgeDetectionThreshold2=90;
     blobEdgesAmount=2;
     filterNoiseThreshold=500;
-    backgroundTolerance=15;
+    backgroundTolerance=30;
 
-    ObjectNoiseThreshold=5000;
+    ObjectNoiseThreshold=20000;
     detectObjects=1;
 
-    typeThreshold=60;
+    typeThreshold=40;
     percentageOfObjectColorAnalyzed=10;
 
 
