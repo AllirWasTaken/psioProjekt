@@ -32,8 +32,15 @@ void Predictor::UpdatePredictor(std::vector<Object> &obj) {
 
     for(int i=0;i<vec.size();i++){
         if(!vec[i].alive){
-            vec.erase(vec.begin()+i);
-            i--;
+            vec[i].life--;
+            if(vec[i].life<0) {
+                vec.erase(vec.begin() + i);
+                i--;
+            }
+        }
+        else {
+            vec[i].life++;
+            if(vec[i].life>10)vec[i].life=10;
         }
     }
 }
@@ -51,7 +58,7 @@ void Predictor::CheckObject(Object &obj) {
             if(obj.type!=OBJECT) {
                 if (obj.type == vec[i].type) {
                     vec[i].resistance++;
-                    if (vec[i].resistance > 30)vec[i].resistance = 30;
+                    if (vec[i].resistance > 10)vec[i].resistance = 10;
                 } else {
                     vec[i].resistance--;
                     if (vec[i].resistance < 0) {

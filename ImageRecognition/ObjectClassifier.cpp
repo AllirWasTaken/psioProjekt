@@ -98,12 +98,21 @@ SampledData ObjectClassifier::SampleImageData(Image &image) {
     r=0;
     g=0;
     b=0;
+    for(int i=0;i<255;i++){
+        result.histoGraph.r[i]=0;
+        result.histoGraph.g[i]=0;
+        result.histoGraph.b[i]=0;
+    }
 
     for(int y=0;y<image.Height();y++){
         for(int x=0;x<image.Width();x++){
             r+=image[y][x].r;
             g+=image[y][x].g;
             b+=image[y][x].b;
+
+            result.histoGraph.r[image[y][x].r]++;
+            result.histoGraph.g[image[y][x].g]++;
+            result.histoGraph.b[image[y][x].b]++;
         }
     }
     r/=image.Height()*image.Width();
@@ -112,7 +121,26 @@ SampledData ObjectClassifier::SampleImageData(Image &image) {
     result.average.r=r;
     result.average.b=b;
     result.average.g=g;
-    return result;
+
+    float mr=0,mg=0,mb=0;
+
+    for(int i=0;i<255;i++){
+        if(result.histoGraph.r[i]>mr){
+            mr=result.histoGraph.r[i];
+        }if(result.histoGraph.g[i]>mg){
+            mg=result.histoGraph.g[i];
+        }if(result.histoGraph.b[i]>mb){
+            mb=result.histoGraph.b[i];
+        }
+    }
+    for(int i=0;i<255;i++) {
+        result.histoGraph.r[i]/=mr;
+        result.histoGraph.g[i]/=mg;
+        result.histoGraph.b[i]/=mb;
+    }
+
+
+        return result;
 }
 
 SampledData ObjectClassifier::SampleObjectData(Image &image, Object &object) {
@@ -123,6 +151,12 @@ SampledData ObjectClassifier::SampleObjectData(Image &image, Object &object) {
     r=0;
     g=0;
     b=0;
+
+    for(int i=0;i<255;i++){
+        result.histoGraph.r[i]=0;
+        result.histoGraph.g[i]=0;
+        result.histoGraph.b[i]=0;
+    }
     Point2 point;
 
     int x,y;
@@ -135,6 +169,10 @@ SampledData ObjectClassifier::SampleObjectData(Image &image, Object &object) {
         r+=image[y][x].r;
         g+=image[y][x].g;
         b+=image[y][x].b;
+
+        result.histoGraph.r[image[y][x].r]++;
+        result.histoGraph.g[image[y][x].g]++;
+        result.histoGraph.b[image[y][x].b]++;
     }
 
     r/=size/step;
@@ -143,20 +181,53 @@ SampledData ObjectClassifier::SampleObjectData(Image &image, Object &object) {
     result.average.r=r;
     result.average.b=b;
     result.average.g=g;
+
+    float mr=0,mg=0,mb=0;
+
+    for(int i=0;i<255;i++){
+        if(result.histoGraph.r[i]>mr){
+            mr=result.histoGraph.r[i];
+        }if(result.histoGraph.g[i]>mg){
+            mg=result.histoGraph.g[i];
+        }if(result.histoGraph.b[i]>mb){
+            mb=result.histoGraph.b[i];
+        }
+    }
+    for(int i=0;i<255;i++) {
+        result.histoGraph.r[i]/=mr;
+        result.histoGraph.g[i]/=mg;
+        result.histoGraph.b[i]/=mb;
+    }
+
     return result;
 }
 
 float ObjectClassifier::MatchObject(std::vector<SampledData> data, SampledData object) {
     float max=0;
-    float diffR,diffB,diffG;
+    std::vector<float> diffR,diffB,diffG;
+    float match=0;
+    diffR.resize(255);
+    diffG.resize(255);
+    diffB.resize(255);
+
+
     for(int i=0;i<data.size();i++){
-        diffR=255-(float)abs(data[i].average.r-object.average.r);
-        diffR/=255;
-        diffG=255-(float)abs(data[i].average.g-object.average.g);
-        diffG/=255;
-        diffB=255-(float)abs(data[i].average.b-object.average.b);
-        diffB/=255;
-        float match=diffR*diffB*diffG;
+
+
+        for(int j=0;j<255;j++){
+            diffR[j]=abs(data[i].histoGraph.r[j]-object.histoGraph.r[j]);
+            diffG[j]=abs(data[i].histoGraph.g[j]-object.histoGraph.g[j]);
+            diffB[j]=abs(data[i].histoGraph.b[j]-object.histoGraph.b[j]);
+        }
+
+        match =1;
+        for(int j=0;j<255;j++){
+            match*=(255-diffR[j])/(float)255;
+            match*=(255-diffG[j])/(float)255;
+            match*=(255-diffB[j])/(float)255;
+        }
+
+
         if(match>max){
             max=match;
         }
@@ -211,4 +282,10 @@ void ObjectClassifier::AnalyzeAndCategorize(Image &image, Object &object) {
 
 ObjectClassifier::ObjectClassifier(Config *configF) {
     config=configF;
+}
+
+HistoGraph::HistoGraph() {
+    r.resize(255);
+    g.resize(255);
+    b.resize(255);
 }

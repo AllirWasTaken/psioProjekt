@@ -3,12 +3,18 @@
 #include "Image.h"
 #include "ObjectDetection.h"
 
+class HistoGraph{
+public:
+    std::vector<float> r,g,b;
+    HistoGraph();
 
+};
 
 
 class SampledData{
 public:
     Pixel average;
+    HistoGraph histoGraph;
 };
 
 class ObjectClassifier {

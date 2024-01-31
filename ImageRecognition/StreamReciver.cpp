@@ -15,7 +15,7 @@ void CameraStream::Connect() {
         if (const char* customUrl = std::getenv("IMG_HOST"); customUrl != nullptr)
             return prefix + std::string{customUrl} + suffix;
 
-        const std::string defaultUrl = "100.95.79.141:8080";
+        const std::string defaultUrl = "192.168.1.100:8080";
         return prefix + defaultUrl + suffix;
     }();
     //open the video stream and make sure it's opened

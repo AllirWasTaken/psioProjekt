@@ -9,6 +9,7 @@ struct Predictions{
     Point2 middle;
     FruitType type;
     int resistance;
+    int life;
     bool alive;
 };
 

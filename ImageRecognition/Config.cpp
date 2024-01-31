@@ -16,12 +16,12 @@ void Config::SetDefault(){
     edgeDetectionThreshold2=90;
     blobEdgesAmount=2;
     filterNoiseThreshold=500;
-    backgroundTolerance=25;
+    backgroundTolerance=15;
 
     ObjectNoiseThreshold=5000;
     detectObjects=1;
 
-    typeThreshold=80;
+    typeThreshold=60;
     percentageOfObjectColorAnalyzed=10;
 
 
