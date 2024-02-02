@@ -5,8 +5,8 @@
 void Config::SetDefault(){
     videoY=720;
     videoX=1280;
-    videoWorkY=420;
-    videoWorkX=1000;
+    videoWorkY=700;
+    videoWorkX=1200;
 
     calibrationMode=0;
     debugMode=0;
