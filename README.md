@@ -1,7 +1,7 @@
 ## Fruit recognition without using AI
 this project is a fruit recognition on transmistion belt without involving AI, its pure CPU handled with any camera you can hook up to your PC
 
-project has a custom 3d printed stand and belt
+project has a custom 3d printed stand and belt,
 most of the code is our own writen libraries
 
 there is a PDF summaring up the project in files
